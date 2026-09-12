@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRIME Sport Santé — Suivi Investissements</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0d10;
+      --surface: #12151a;
+      --surface2: #181c23;
+      --border: #232830;
+      --border2: #2e3540;
+      --text: #e8eaf0;
+      --text2: #8a90a0;
+      --text3: #555d6e;
+      --accent: #c8f032;
+      --accent2: #a0c820;
+      --back-color: #3a8fd4;
+      --fit-color: #3ab870;
+      --well-color: #9a5cd4;
+      --mobilier-color: #d4913a;
+      --av-color: #3ab8b8;
+      --agm-color: #d45a5a;
+      --danger: #e05a5a;
+      --warn: #e0a03a;
+      --ok: #3ab870;
+      --radius: 6px;
+      --font-display: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      height: 56px;
+    }
+
+    .logo-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark svg { width: 18px; height: 18px; }
+
+    .logo-text {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      color: var(--text);
+    }
+
+    .logo-sub {
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 300;
+    }
+
+    .header-divider { flex: 1; }
+
+    .grand-total-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .grand-total-label {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+
+    .grand-total-value {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .grand-total-ttc {
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    .sync-btn {
+      background: none;
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      padding: 6px 14px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sync-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .sync-btn.loading { opacity: 0.6; cursor: not-allowed; }
+
+    .spin { animation: spin 1s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── TABS ─── */
+    .tabs-bar {
+      display: flex;
+      gap: 2px;
+      padding: 16px 32px 0;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 8px 16px 10px;
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab:hover { color: var(--text2); }
+    .tab.active { color: var(--text); border-bottom-color: var(--tab-color, var(--accent)); }
+
+    .tab-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--tab-color, var(--accent));
+      opacity: 0.8;
+    }
+
+    .tab-total {
+      font-size: 10px;
+      color: var(--text3);
+      font-weight: 300;
+    }
+
+    /* ─── MAIN CONTENT ─── */
+    main { padding: 24px 32px 60px; }
+
+    /* ─── SUMMARY CARDS ─── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--card-color, var(--accent));
+    }
+
+    .summary-card:hover { border-color: var(--card-color, var(--accent)); background: var(--surface2); }
+    .summary-card.active { border-color: var(--card-color, var(--accent)); background: var(--surface2); }
+
+    .card-label {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 6px;
+    }
+
+    .card-amount {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      margin-bottom: 2px;
+    }
+
+    .card-ttc {
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    .card-statuts {
+      margin-top: 8px;
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-attente { background: rgba(138,144,160,0.12); color: var(--text3); }
+    .badge-commande { background: rgba(58,184,112,0.15); color: var(--ok); }
+    .badge-livraison { background: rgba(224,160,58,0.15); color: var(--warn); }
+    .badge-livre { background: rgba(200,240,50,0.15); color: var(--accent); }
+    .badge-annule { background: rgba(224,90,90,0.12); color: var(--danger); }
+
+    /* ─── TABLE ─── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text2);
+    }
+
+    .section-total {
+      font-size: 10px;
+      color: var(--text3);
+      margin-left: auto;
+    }
+
+    .section-toggle {
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 0 4px;
+      transition: color 0.15s;
+    }
+    .section-toggle:hover { color: var(--text); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    thead th {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text3);
+      text-align: left;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 400;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+
+    tbody tr:hover { background: var(--surface); }
+
+    td {
+      padding: 7px 8px;
+      color: var(--text2);
+      vertical-align: middle;
+    }
+
+    td.designation {
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    td.number {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      color: var(--text2);
+    }
+
+    td.number.zero { color: var(--text3); }
+
+    /* Column widths */
+    .col-desig { width: 28%; }
+    .col-qty { width: 5%; }
+    .col-pu-ht { width: 9%; }
+    .col-pu-ttc { width: 9%; }
+    .col-tot-ht { width: 9%; }
+    .col-tot-ttc { width: 9%; }
+    .col-fourn { width: 14%; }
+    .col-statut { width: 11%; }
+    .col-date { width: 6%; }
+
+    /* ─── EDITABLE CELLS ─── */
+    .editable {
+      cursor: pointer;
+      border-radius: 3px;
+      padding: 3px 5px;
+      margin: -3px -5px;
+      transition: background 0.1s;
+      display: inline-block;
+    }
+
+    .editable:hover { background: var(--surface2); outline: 1px solid var(--border2); }
+
+    .edit-input {
+      background: var(--surface2);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      width: 100%;
+      outline: none;
+    }
+
+    /* ─── STATUT SELECT ─── */
+    .statut-select {
+      appearance: none;
+      background: transparent;
+      border: none;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      cursor: pointer;
+      outline: none;
+      padding: 2px 4px;
+      border-radius: 3px;
+      width: 100%;
+    }
+
+    .statut-attente { color: var(--text3); }
+    .statut-commande { color: var(--ok); }
+    .statut-livraison { color: var(--warn); }
+    .statut-livre { color: var(--accent); }
+    .statut-annule { color: var(--danger); }
+
+    /* ─── SUBTOTAL ROW ─── */
+    tr.subtotal-row td {
+      background: var(--surface);
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+      border-top: 1px solid var(--border2);
+    }
+
+    tr.subtotal-row td.number { color: var(--text2); }
+
+    /* ─── LOADING / ERROR ─── */
+    .loading-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      gap: 16px;
+    }
+
+    .loading-bar {
+      width: 200px;
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .loading-fill {
+      height: 100%;
+      background: var(--accent);
+      animation: loading 1.5s ease-in-out infinite;
+    }
+
+    @keyframes loading {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(300%); }
+    }
+
+    .loading-text {
+      font-size: 11px;
+      color: var(--text3);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .error-box {
+      background: rgba(224,90,90,0.08);
+      border: 1px solid rgba(224,90,90,0.3);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin: 20px 0;
+      color: var(--danger);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    /* ─── TOAST ─── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      padding: 10px 16px;
+      border-radius: var(--radius);
+      font-size: 12px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.2s;
+      z-index: 1000;
+      max-width: 320px;
+    }
+
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.success { border-left: 3px solid var(--ok); }
+    #toast.error { border-left: 3px solid var(--danger); }
+    #toast.saving { border-left: 3px solid var(--warn); }
+
+    /* ─── EMPTY ─── */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--text3);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ─── PROGRESS BAR ─── */
+    .progress-bar-wrap {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 4px 0;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--card-color, var(--accent));
+      transition: width 0.4s ease;
+    }
+
+    /* ─── LAST SYNC ─── */
+    .last-sync {
+      font-size: 9px;
+      color: var(--text3);
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-block">
+    <div class="logo-mark">
+      <svg viewBox="0 0 18 18" fill="none">
+        <rect x="1" y="1" width="7" height="7" fill="#0b0d10" rx="1"/>
+        <rect x="10" y="1" width="7" height="7" fill="#0b0d10" rx="1"/>
+        <rect x="1" y="10" width="7" height="7" fill="#0b0d10" rx="1"/>
+        <rect x="10" y="10" width="7" height="7" fill="#0b0d10" rx="1"/>
+        <rect x="3" y="3" width="3" height="3" fill="#c8f032"/>
+        <rect x="12" y="3" width="3" height="3" fill="#c8f032"/>
+        <rect x="3" y="12" width="3" height="3" fill="#c8f032"/>
+        <rect x="12" y="12" width="3" height="3" fill="#c8f032"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">PRIME Sport Santé</div>
+      <div class="logo-sub">Suivi des investissements — JL PRIME</div>
+    </div>
+  </div>
+
+  <div class="header-divider"></div>
+
+  <span class="last-sync" id="lastSync">—</span>
+
+  <button class="sync-btn" id="syncBtn" onclick="loadData()">
+    <span id="syncIcon">↻</span> Actualiser
+  </button>
+
+  <div class="grand-total-header">
+    <div class="grand-total-label">Total général HT</div>
+    <div class="grand-total-value" id="grandTotalHT">—</div>
+    <div class="grand-total-ttc" id="grandTotalTTC">— TTC</div>
+  </div>
+</header>
+
+<div class="tabs-bar" id="tabsBar">
+  <!-- generated -->
+</div>
+
+<main id="mainContent">
+  <div class="loading-screen">
+    <div class="loading-bar"><div class="loading-fill"></div></div>
+    <div class="loading-text">Connexion à Google Sheets…</div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+// ─── CONFIG ───
+const TABS_META = [
+  { key: 'back',      label: 'PRIME BACK',        color: '#3a8fd4' },
+  { key: 'fit',       label: 'PRIME FIT',          color: '#3ab870' },
+  { key: 'well',      label: 'PRIME WELL',         color: '#9a5cd4' },
+  { key: 'mobilier',  label: 'MOBILIER',           color: '#d4913a' },
+  { key: 'av',        label: 'INFO & AV',          color: '#3ab8b8' },
+  { key: 'agm',       label: 'AGM CONSTRUCTIONS',  color: '#d45a5a' },
+];
+
+const STATUTS = [
+  { value: 'En attente',           label: 'En attente',           cls: 'statut-attente' },
+  { value: 'Commandé',             label: 'Commandé',             cls: 'statut-commande' },
+  { value: 'En cours de livraison',label: 'En cours de livraison',cls: 'statut-livraison' },
+  { value: 'Livré',                label: 'Livré',                cls: 'statut-livre' },
+  { value: 'Annulé',               label: 'Annulé',               cls: 'statut-annule' },
+];
+
+// ─── STATE ───
+let appData = null;
+let activeTab = 'back';
+let saving = false;
+
+// ─── UTILS ───
+function fmt(n) {
+  if (!n && n !== 0) return '—';
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
+}
+
+function fmtInput(n) {
+  if (!n && n !== 0) return '';
+  return String(n).replace('.', ',');
+}
+
+function parseInput(s) {
+  return parseFloat(String(s).replace(/\s/g, '').replace(',', '.')) || 0;
+}
+
+function statutCls(s) {
+  const map = {
+    'En attente': 'statut-attente',
+    'Commandé': 'statut-commande',
+    'En cours de livraison': 'statut-livraison',
+    'Livré': 'statut-livre',
+    'Annulé': 'statut-annule',
+  };
+  return map[s] || 'statut-attente';
+}
+
+function badgeCls(s) {
+  const map = {
+    'En attente': 'badge-attente',
+    'Commandé': 'badge-commande',
+    'En cours de livraison': 'badge-livraison',
+    'Livré': 'badge-livre',
+    'Annulé': 'badge-annule',
+  };
+  return map[s] || 'badge-attente';
+}
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = ''; }, 3000);
+}
+
+// ─── STATUT COUNTS ───
+function statutCounts(tab) {
+  const counts = {};
+  (tab.sections || []).forEach(s => s.items.forEach(item => {
+    counts[item.statut] = (counts[item.statut] || 0) + 1;
+  }));
+  return counts;
+}
+
+// ─── TABS ───
+function renderTabs() {
+  const bar = document.getElementById('tabsBar');
+  bar.innerHTML = TABS_META.map(t => {
+    const tabData = appData ? appData.tabs[t.key] : null;
+    const total = tabData ? fmt(tabData.total_ht) : '—';
+    return `<div class="tab ${t.key === activeTab ? 'active' : ''}"
+               style="--tab-color: ${t.color}"
+               onclick="switchTab('${t.key}')">
+      <span class="tab-dot"></span>
+      ${t.label}
+      <span class="tab-total">${total}</span>
+    </div>`;
+  }).join('');
+}
+
+function switchTab(key) {
+  activeTab = key;
+  renderTabs();
+  renderContent();
+}
+
+// ─── SUMMARY CARDS ───
+function renderSummaryCards() {
+  if (!appData) return '';
+  return `<div class="summary-grid">
+    ${TABS_META.map(t => {
+      const tab = appData.tabs[t.key];
+      if (!tab) return '';
+      const counts = statutCounts(tab);
+      const pct = appData.grand_total_ht > 0 ? (tab.total_ht / appData.grand_total_ht * 100) : 0;
+      return `<div class="summary-card ${t.key === activeTab ? 'active' : ''}"
+                   style="--card-color: ${t.color}"
+                   onclick="switchTab('${t.key}')">
+        <div class="card-label">${t.label}</div>
+        <div class="card-amount">${fmt(tab.total_ht)}</div>
+        <div class="card-ttc">${fmt(tab.total_ttc)} TTC</div>
+        <div class="progress-bar-wrap" style="--card-color: ${t.color}">
+          <div class="progress-bar-fill" style="width: ${pct.toFixed(1)}%; background: ${t.color}"></div>
+        </div>
+        <div class="card-statuts">
+          ${Object.entries(counts).map(([s, n]) =>
+            `<span class="badge ${badgeCls(s)}">${n} ${s === 'En cours de livraison' ? 'livr.' : s.toLowerCase()}</span>`
+          ).join('')}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ─── TABLE ───
+function renderTable(tab) {
+  if (!tab || !tab.sections || tab.sections.length === 0) {
+    return `<div class="empty-state">Aucune donnée disponible pour cet onglet</div>`;
+  }
+
+  let html = `<table>
+    <thead>
+      <tr>
+        <th class="col-desig">Désignation</th>
+        <th class="col-qty" style="text-align:right">Qté</th>
+        <th class="col-pu-ht" style="text-align:right">PU HT</th>
+        <th class="col-pu-ttc" style="text-align:right">PU TTC</th>
+        <th class="col-tot-ht" style="text-align:right">Total HT</th>
+        <th class="col-tot-ttc" style="text-align:right">Total TTC</th>
+        <th class="col-fourn">Fournisseur</th>
+        <th class="col-statut">Statut</th>
+        <th class="col-date">Livraison</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  tab.sections.forEach((section, si) => {
+    // Section header
+    const sectionTotalHT = section.items.reduce((s, i) => s + (i.total_ht || 0), 0);
+    html += `<tr>
+      <td colspan="9">
+        <div class="section-header">
+          <span class="section-title">▸ ${section.name}</span>
+          <span class="section-total">${fmt(sectionTotalHT)} HT</span>
+        </div>
+      </td>
+    </tr>`;
+
+    section.items.forEach((item, ii) => {
+      const statOpts = STATUTS.map(s =>
+        `<option value="${s.value}" ${item.statut === s.value ? 'selected' : ''}>${s.label}</option>`
+      ).join('');
+
+      html += `<tr data-tab="${tab.key}" data-si="${si}" data-ii="${ii}" data-row="${item.row_index}" data-sheet="${tab.sheet_name}">
+        <td class="col-desig designation">${item.designation}</td>
+        <td class="col-qty number ${!item.qty ? 'zero' : ''}">${item.qty || '—'}</td>
+        <td class="col-pu-ht number ${!item.prix_ht ? 'zero' : ''}">
+          <span class="editable" data-field="prix_ht" onclick="startEdit(this, event)">${item.prix_ht ? fmt(item.prix_ht) : '—'}</span>
+        </td>
+        <td class="col-pu-ttc number ${!item.prix_ttc ? 'zero' : ''}">
+          <span class="editable" data-field="prix_ttc" onclick="startEdit(this, event)">${item.prix_ttc ? fmt(item.prix_ttc) : '—'}</span>
+        </td>
+        <td class="col-tot-ht number ${!item.total_ht ? 'zero' : ''}">
+          <span class="editable" data-field="total_ht" onclick="startEdit(this, event)">${item.total_ht ? fmt(item.total_ht) : '—'}</span>
+        </td>
+        <td class="col-tot-ttc number ${!item.total_ttc ? 'zero' : ''}">
+          <span class="editable" data-field="total_ttc" onclick="startEdit(this, event)">${item.total_ttc ? fmt(item.total_ttc) : '—'}</span>
+        </td>
+        <td class="col-fourn">
+          <span class="editable" data-field="fournisseur" onclick="startEdit(this, event)">${item.fournisseur || '—'}</span>
+        </td>
+        <td class="col-statut">
+          <select class="statut-select ${statutCls(item.statut)}"
+                  data-field="statut"
+                  onchange="saveField(this, event)">
+            ${statOpts}
+          </select>
+        </td>
+        <td class="col-date">
+          <span class="editable" data-field="date_livraison" onclick="startEdit(this, event)">${item.date_livraison || '—'}</span>
+        </td>
+      </tr>`;
+    });
+
+    // Subtotal
+    const subTTC = section.items.reduce((s, i) => s + (i.total_ttc || 0), 0);
+    html += `<tr class="subtotal-row">
+      <td colspan="4">Sous-total — ${section.name}</td>
+      <td class="number">${fmt(sectionTotalHT)}</td>
+      <td class="number">${fmt(subTTC)}</td>
+      <td colspan="3"></td>
+    </tr>`;
+  });
+
+  // Grand total for this tab
+  html += `<tr class="subtotal-row">
+    <td colspan="4" style="color: var(--text2); font-size:11px">TOTAL — ${tab.label}</td>
+    <td class="number" style="color: var(--text); font-size:12px">${fmt(tab.total_ht)}</td>
+    <td class="number" style="color: var(--text2); font-size:12px">${fmt(tab.total_ttc)}</td>
+    <td colspan="3"></td>
+  </tr>`;
+
+  html += `</tbody></table>`;
+  return html;
+}
+
+// ─── RENDER CONTENT ───
+function renderContent() {
+  const main = document.getElementById('mainContent');
+  if (!appData) return;
+
+  const tab = appData.tabs[activeTab];
+  const color = TABS_META.find(t => t.key === activeTab)?.color || '#c8f032';
+
+  main.innerHTML = renderSummaryCards() + `
+    <div style="border-left: 2px solid ${color}; padding-left: 16px; margin-bottom: 20px">
+      <div style="font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 2px">
+        ${tab?.label || activeTab.toUpperCase()}
+      </div>
+      <div style="font-size: 11px; color: var(--text3)">
+        ${tab?.total_ht ? fmt(tab.total_ht) + ' HT' : 'Aucune donnée'} 
+        ${tab?.total_ttc ? '· ' + fmt(tab.total_ttc) + ' TTC' : ''}
+      </div>
+    </div>
+    ${tab?.error ? `<div class="error-box">⚠ Erreur de chargement : ${tab.error}</div>` : ''}
+    ${renderTable(tab)}
+  `;
+}
+
+// ─── INLINE EDIT ───
+function startEdit(span, event) {
+  event.stopPropagation();
+  if (span.querySelector('input')) return;
+
+  const row = span.closest('tr');
+  const field = span.dataset.field;
+  const si = parseInt(row.dataset.si);
+  const ii = parseInt(row.dataset.ii);
+  const tabKey = row.dataset.tab;
+  const item = appData.tabs[tabKey].sections[si].items[ii];
+
+  const currentVal = item[field];
+  const isNumber = ['prix_ht', 'prix_ttc', 'total_ht', 'total_ttc'].includes(field);
+
+  const input = document.createElement('input');
+  input.className = 'edit-input';
+  input.value = isNumber ? (currentVal || '') : (currentVal || '');
+  input.type = isNumber ? 'number' : 'text';
+  if (isNumber) { input.step = '0.01'; input.min = '0'; }
+
+  span.innerHTML = '';
+  span.appendChild(input);
+  input.focus();
+  input.select();
+
+  const commit = () => {
+    const newVal = isNumber ? parseInput(input.value) : input.value.trim();
+    item[field] = newVal || (isNumber ? null : '');
+    span.innerHTML = isNumber ? (newVal ? fmt(newVal) : '—') : (newVal || '—');
+    saveField(span, event, field, newVal, row);
+  };
+
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    if (e.key === 'Escape') {
+      span.innerHTML = isNumber ? (currentVal ? fmt(currentVal) : '—') : (currentVal || '—');
+    }
+  });
+}
+
+// ─── SAVE FIELD ───
+async function saveField(el, event, fieldOverride, valueOverride, rowOverride) {
+  if (saving) return;
+
+  const row = rowOverride || el.closest('tr');
+  const sheetName = row.dataset.sheet;
+  const rowIndex = parseInt(row.dataset.row);
+  const tabKey = row.dataset.tab;
+  const si = parseInt(row.dataset.si);
+  const ii = parseInt(row.dataset.ii);
+
+  const field = fieldOverride || el.dataset.field;
+  let value = valueOverride !== undefined ? valueOverride : el.value;
+
+  // Update local state for select
+  if (el.tagName === 'SELECT') {
+    const item = appData.tabs[tabKey].sections[si].items[ii];
+    item.statut = value;
+    el.className = `statut-select ${statutCls(value)}`;
+    // Re-render summary cards only
+    updateSummaryCards();
+  }
+
+  showToast('Enregistrement…', 'saving');
+  saving = true;
+
+  try {
+    const res = await fetch('/api/sheets-update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sheet_name: sheetName, row_index: rowIndex, field, value }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('✓ Enregistré dans Google Sheets', 'success');
+      // Update totals
+      recomputeTotals();
+    } else {
+      showToast(`✗ Erreur : ${data.error}`, 'error');
+    }
+  } catch (e) {
+    showToast(`✗ Connexion impossible : ${e.message}`, 'error');
+  } finally {
+    saving = false;
+  }
+}
+
+function recomputeTotals() {
+  if (!appData) return;
+  let grand_ht = 0, grand_ttc = 0;
+  Object.values(appData.tabs).forEach(tab => {
+    tab.total_ht = 0; tab.total_ttc = 0;
+    (tab.sections || []).forEach(s => s.items.forEach(item => {
+      tab.total_ht += item.total_ht || 0;
+      tab.total_ttc += item.total_ttc || 0;
+    }));
+    grand_ht += tab.total_ht;
+    grand_ttc += tab.total_ttc;
+  });
+  appData.grand_total_ht = grand_ht;
+  appData.grand_total_ttc = grand_ttc;
+  document.getElementById('grandTotalHT').textContent = fmt(grand_ht);
+  document.getElementById('grandTotalTTC').textContent = fmt(grand_ttc) + ' TTC';
+  renderTabs();
+}
+
+function updateSummaryCards() {
+  // Just re-render the summary section without touching the table
+  const grid = document.querySelector('.summary-grid');
+  if (grid) {
+    grid.outerHTML = '';
+    const main = document.getElementById('mainContent');
+    main.insertAdjacentHTML('afterbegin', renderSummaryCards());
+  }
+}
+
+// ─── LOAD DATA ───
+async function loadData() {
+  const btn = document.getElementById('syncBtn');
+  const icon = document.getElementById('syncIcon');
+  btn.classList.add('loading');
+  icon.classList.add('spin');
+  icon.textContent = '↻';
+
+  if (!appData) {
+    document.getElementById('mainContent').innerHTML = `
+      <div class="loading-screen">
+        <div class="loading-bar"><div class="loading-fill"></div></div>
+        <div class="loading-text">Chargement depuis Google Sheets…</div>
+      </div>`;
+  }
+
+  try {
+    const res = await fetch('/api/sheets-read');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    appData = await res.json();
+
+    document.getElementById('grandTotalHT').textContent = fmt(appData.grand_total_ht);
+    document.getElementById('grandTotalTTC').textContent = fmt(appData.grand_total_ttc) + ' TTC';
+
+    const now = new Date();
+    document.getElementById('lastSync').textContent =
+      `Sync ${now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+
+    renderTabs();
+    renderContent();
+  } catch (e) {
+    document.getElementById('mainContent').innerHTML = `
+      <div class="error-box">
+        <strong>Impossible de charger les données</strong><br><br>
+        ${e.message}<br><br>
+        Vérifiez que les variables d'environnement Netlify sont correctement configurées :<br>
+        <code>GOOGLE_SPREADSHEET_ID</code> et <code>GOOGLE_SERVICE_ACCOUNT_JSON</code>
+      </div>`;
+  } finally {
+    btn.classList.remove('loading');
+    icon.classList.remove('spin');
+  }
+}
+
+// ─── INIT ───
+renderTabs();
+loadData();
+setInterval(loadData, 5 * 60 * 1000); // Auto-refresh toutes les 5 minutes
+</script>
+</body>
+</html>

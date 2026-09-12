@@ -1,0 +1,11 @@
+{
+  "name": "prime-sport-sante-tracker",
+  "version": "1.0.0",
+  "description": "PRIME Sport Santé — Suivi des investissements",
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "googleapis": "^140.0.0"
+  }
+}
