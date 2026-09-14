@@ -5,974 +5,388 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PRIME Sport Santé — Suivi Investissements</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0b0d10;
-      --surface: #12151a;
-      --surface2: #181c23;
-      --border: #232830;
-      --border2: #2e3540;
-      --text: #e8eaf0;
-      --text2: #8a90a0;
-      --text3: #555d6e;
-      --accent: #c8f032;
-      --accent2: #a0c820;
-      --back-color: #3a8fd4;
-      --fit-color: #3ab870;
-      --well-color: #9a5cd4;
-      --mobilier-color: #d4913a;
-      --av-color: #3ab8b8;
-      --agm-color: #d45a5a;
-      --danger: #e05a5a;
-      --warn: #e0a03a;
-      --ok: #3ab870;
-      --radius: 6px;
-      --font-display: 'Syne', sans-serif;
-      --font-mono: 'DM Mono', monospace;
+      --bg: #f1f5f9;
+      --white: #ffffff;
+      --border: #e2e8f0;
+      --border2: #cbd5e1;
+      --text: #0f172a;
+      --text2: #334155;
+      --text3: #64748b;
+      --accent: #1e40af;
+      --row-hover: #f8fafc;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 8px;
+      --font: 'Inter', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --ok: #15803d; --ok-bg: #f0fdf4;
+      --warn: #b45309; --warn-bg: #fffbeb;
+      --danger: #b91c1c; --danger-bg: #fef2f2;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 13.5px; }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-mono);
-      font-size: 13px;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* ─── HEADER ─── */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      padding: 0 32px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      height: 56px;
-    }
-
-    .logo-block {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo-mark {
-      width: 32px;
-      height: 32px;
-      background: var(--accent);
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .logo-mark svg { width: 18px; height: 18px; }
-
-    .logo-text {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 15px;
-      letter-spacing: 0.08em;
-      color: var(--text);
-    }
-
-    .logo-sub {
-      font-size: 10px;
-      color: var(--text3);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      font-weight: 300;
-    }
-
-    .header-divider { flex: 1; }
-
-    .grand-total-header {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-    }
-
-    .grand-total-label {
-      font-size: 9px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--text3);
-    }
-
-    .grand-total-value {
-      font-family: var(--font-display);
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: -0.02em;
-    }
-
-    .grand-total-ttc {
-      font-size: 10px;
-      color: var(--text3);
-    }
-
-    .sync-btn {
-      background: none;
-      border: 1px solid var(--border2);
-      color: var(--text2);
-      padding: 6px 14px;
-      border-radius: var(--radius);
-      cursor: pointer;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.05em;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
+    /* HEADER */
+    header { background: white; border-bottom: 1px solid var(--border); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+    .hinner { max-width: 1400px; margin: auto; padding: 0 24px; height: 60px; display: flex; align-items: center; gap: 16px; }
+    .logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; color: white; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo-name { font-weight: 700; font-size: 15px; }
+    .logo-sub { font-size: 11px; color: var(--text3); }
+    .hsep { flex: 1; }
+    .last-sync { font-size: 11px; color: var(--text3); }
+    .sync-btn { display: flex; align-items: center; gap: 6px; background: white; border: 1px solid var(--border2); color: var(--text2); padding: 7px 14px; border-radius: 6px; cursor: pointer; font-family: var(--font); font-size: 13px; font-weight: 500; transition: all .15s; }
     .sync-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .sync-btn.loading { opacity: 0.6; cursor: not-allowed; }
-
-    .spin { animation: spin 1s linear infinite; display: inline-block; }
+    .sync-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .gtotal-label { font-size: 11px; color: var(--text3); text-align: right; }
+    .gtotal-val { font-size: 20px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+    .gtotal-ttc { font-size: 11px; color: var(--text3); }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .spinning { animation: spin .8s linear infinite; display: inline-block; }
 
-    /* ─── TABS ─── */
-    .tabs-bar {
-      display: flex;
-      gap: 2px;
-      padding: 16px 32px 0;
-      border-bottom: 1px solid var(--border);
-      overflow-x: auto;
-    }
+    /* CONTENT */
+    .content { max-width: 1400px; margin: auto; padding: 20px 24px 48px; }
 
-    .tab {
-      padding: 8px 16px 10px;
-      font-family: var(--font-display);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text3);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      white-space: nowrap;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    /* CARDS */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .card { background: white; border: 1px solid var(--border); border-top: 3px solid var(--cc); border-radius: var(--radius); padding: 14px 16px; cursor: pointer; box-shadow: var(--shadow); transition: all .15s; }
+    .card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .card.active { box-shadow: 0 0 0 2px var(--cc); }
+    .card-lbl { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); margin-bottom: 5px; }
+    .card-amt { font-size: 19px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+    .card-ttc { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
+    .card-bar { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 8px; overflow: hidden; }
+    .card-bar-fill { height: 100%; background: var(--cc); border-radius: 2px; transition: width .5s; }
+    .badges { display: flex; gap: 4px; flex-wrap: wrap; }
+    .badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 100px; }
+    .ba { background: #f1f5f9; color: #64748b; }
+    .bc { background: var(--ok-bg); color: var(--ok); }
+    .bl { background: var(--warn-bg); color: var(--warn); }
+    .bv { background: #dcfce7; color: #15803d; }
+    .bn { background: var(--danger-bg); color: var(--danger); }
 
-    .tab:hover { color: var(--text2); }
-    .tab.active { color: var(--text); border-bottom-color: var(--tab-color, var(--accent)); }
+    /* TABS */
+    .tabs { background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); display: flex; overflow-x: auto; margin-bottom: 16px; }
+    .tab { padding: 12px 18px; font-size: 12px; font-weight: 600; letter-spacing: .04em; color: var(--text3); cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; display: flex; align-items: center; gap: 8px; transition: all .15s; user-select: none; }
+    .tab:hover { color: var(--text2); background: var(--bg); }
+    .tab.active { color: var(--tc); border-bottom-color: var(--tc); }
+    .tdot { width: 8px; height: 8px; border-radius: 50%; background: var(--tc); }
+    .tamt { font-size: 11px; font-weight: 400; color: var(--text3); }
 
-    .tab-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--tab-color, var(--accent));
-      opacity: 0.8;
-    }
+    /* TABLE CARD */
+    .tcard { background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .thead-bar { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .thead-title { font-size: 15px; font-weight: 700; }
+    .totals { margin-left: auto; display: flex; gap: 24px; }
+    .tot-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; }
+    .tot-val { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .twrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 860px; }
+    thead th { background: #f8fafc; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text3); padding: 9px 12px; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
+    th.r, td.r { text-align: right; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:nth-child(even) { background: #fafbfd; }
+    tbody tr:hover { background: #f0f7ff !important; }
+    td { padding: 9px 12px; color: var(--text2); font-size: 13px; vertical-align: middle; }
+    td.desig { color: var(--text); font-weight: 500; }
+    td.r { font-family: var(--mono); font-size: 12px; }
+    td.dim { color: var(--text3); }
 
-    .tab-total {
-      font-size: 10px;
-      color: var(--text3);
-      font-weight: 300;
-    }
+    /* SECTION / SUBTOTAL / GRAND TOTAL */
+    tr.sec td { background: #f1f5f9; font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text2); border-top: 1px solid var(--border2); padding: 7px 12px; }
+    tr.sub td { background: #f8fafc; font-size: 12px; font-weight: 600; color: var(--text2); border-top: 1px solid var(--border); font-style: italic; }
+    tr.sub td.r { font-family: var(--mono); color: var(--text); font-style: normal; }
+    tr.gtot td { background: var(--accent); color: white; font-weight: 700; font-size: 13px; border-top: 2px solid #1e3a8a; }
+    tr.gtot td.r { font-family: var(--mono); color: white; }
 
-    /* ─── MAIN CONTENT ─── */
-    main { padding: 24px 32px 60px; }
+    /* EDITABLE */
+    .ed { display: inline-block; cursor: text; border-radius: 4px; padding: 2px 4px; margin: -2px -4px; transition: background .1s; min-width: 20px; }
+    .ed:hover { background: #dbeafe; outline: 1px dashed #93c5fd; }
+    .einput { font-family: var(--mono); font-size: 12px; background: white; border: 2px solid var(--accent); border-radius: 4px; padding: 2px 6px; outline: none; color: var(--text); width: 100%; }
 
-    /* ─── SUMMARY CARDS ─── */
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 12px;
-      margin-bottom: 28px;
-    }
+    /* STATUT SELECT */
+    .ss { appearance: none; border: none; background: transparent; font-family: var(--font); font-size: 12px; font-weight: 500; cursor: pointer; outline: none; padding: 3px 8px; border-radius: 100px; width: 100%; }
+    .sa { background: #f1f5f9; color: #64748b; }
+    .sc { background: var(--ok-bg); color: var(--ok); }
+    .sl { background: var(--warn-bg); color: var(--warn); }
+    .sv { background: #dcfce7; color: #15803d; }
+    .sn { background: var(--danger-bg); color: var(--danger); }
 
-    .summary-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-      position: relative;
-      overflow: hidden;
-    }
+    /* LOADING / ERROR */
+    .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 320px; gap: 16px; }
+    .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+    .loading-txt { font-size: 13px; color: var(--text3); }
+    .errbox { background: var(--danger-bg); border: 1px solid #fca5a5; border-radius: var(--radius); padding: 20px 24px; color: var(--danger); font-size: 13px; line-height: 1.7; }
+    .errbox code { font-family: var(--mono); background: rgba(185,28,28,.08); padding: 1px 5px; border-radius: 3px; }
 
-    .summary-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--card-color, var(--accent));
-    }
-
-    .summary-card:hover { border-color: var(--card-color, var(--accent)); background: var(--surface2); }
-    .summary-card.active { border-color: var(--card-color, var(--accent)); background: var(--surface2); }
-
-    .card-label {
-      font-size: 9px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--text3);
-      margin-bottom: 6px;
-    }
-
-    .card-amount {
-      font-family: var(--font-display);
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -0.03em;
-      margin-bottom: 2px;
-    }
-
-    .card-ttc {
-      font-size: 10px;
-      color: var(--text3);
-    }
-
-    .card-statuts {
-      margin-top: 8px;
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      font-size: 9px;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-    }
-
-    .badge-attente { background: rgba(138,144,160,0.12); color: var(--text3); }
-    .badge-commande { background: rgba(58,184,112,0.15); color: var(--ok); }
-    .badge-livraison { background: rgba(224,160,58,0.15); color: var(--warn); }
-    .badge-livre { background: rgba(200,240,50,0.15); color: var(--accent); }
-    .badge-annule { background: rgba(224,90,90,0.12); color: var(--danger); }
-
-    /* ─── TABLE ─── */
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 20px 0 8px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .section-title {
-      font-family: var(--font-display);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text2);
-    }
-
-    .section-total {
-      font-size: 10px;
-      color: var(--text3);
-      margin-left: auto;
-    }
-
-    .section-toggle {
-      background: none;
-      border: none;
-      color: var(--text3);
-      cursor: pointer;
-      font-size: 12px;
-      padding: 0 4px;
-      transition: color 0.15s;
-    }
-    .section-toggle:hover { color: var(--text); }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
-
-    thead th {
-      font-size: 9px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--text3);
-      text-align: left;
-      padding: 6px 8px;
-      border-bottom: 1px solid var(--border);
-      font-weight: 400;
-    }
-
-    tbody tr {
-      border-bottom: 1px solid var(--border);
-      transition: background 0.1s;
-    }
-
-    tbody tr:hover { background: var(--surface); }
-
-    td {
-      padding: 7px 8px;
-      color: var(--text2);
-      vertical-align: middle;
-    }
-
-    td.designation {
-      color: var(--text);
-      font-size: 12px;
-    }
-
-    td.number {
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-      color: var(--text2);
-    }
-
-    td.number.zero { color: var(--text3); }
-
-    /* Column widths */
-    .col-desig { width: 28%; }
-    .col-qty { width: 5%; }
-    .col-pu-ht { width: 9%; }
-    .col-pu-ttc { width: 9%; }
-    .col-tot-ht { width: 9%; }
-    .col-tot-ttc { width: 9%; }
-    .col-fourn { width: 14%; }
-    .col-statut { width: 11%; }
-    .col-date { width: 6%; }
-
-    /* ─── EDITABLE CELLS ─── */
-    .editable {
-      cursor: pointer;
-      border-radius: 3px;
-      padding: 3px 5px;
-      margin: -3px -5px;
-      transition: background 0.1s;
-      display: inline-block;
-    }
-
-    .editable:hover { background: var(--surface2); outline: 1px solid var(--border2); }
-
-    .edit-input {
-      background: var(--surface2);
-      border: 1px solid var(--accent);
-      color: var(--text);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      padding: 2px 6px;
-      border-radius: 3px;
-      width: 100%;
-      outline: none;
-    }
-
-    /* ─── STATUT SELECT ─── */
-    .statut-select {
-      appearance: none;
-      background: transparent;
-      border: none;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      cursor: pointer;
-      outline: none;
-      padding: 2px 4px;
-      border-radius: 3px;
-      width: 100%;
-    }
-
-    .statut-attente { color: var(--text3); }
-    .statut-commande { color: var(--ok); }
-    .statut-livraison { color: var(--warn); }
-    .statut-livre { color: var(--accent); }
-    .statut-annule { color: var(--danger); }
-
-    /* ─── SUBTOTAL ROW ─── */
-    tr.subtotal-row td {
-      background: var(--surface);
-      font-size: 10px;
-      color: var(--text3);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      font-weight: 500;
-      border-top: 1px solid var(--border2);
-    }
-
-    tr.subtotal-row td.number { color: var(--text2); }
-
-    /* ─── LOADING / ERROR ─── */
-    .loading-screen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 300px;
-      gap: 16px;
-    }
-
-    .loading-bar {
-      width: 200px;
-      height: 2px;
-      background: var(--border);
-      border-radius: 1px;
-      overflow: hidden;
-    }
-
-    .loading-fill {
-      height: 100%;
-      background: var(--accent);
-      animation: loading 1.5s ease-in-out infinite;
-    }
-
-    @keyframes loading {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(300%); }
-    }
-
-    .loading-text {
-      font-size: 11px;
-      color: var(--text3);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-    }
-
-    .error-box {
-      background: rgba(224,90,90,0.08);
-      border: 1px solid rgba(224,90,90,0.3);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      margin: 20px 0;
-      color: var(--danger);
-      font-size: 12px;
-      line-height: 1.6;
-    }
-
-    /* ─── TOAST ─── */
-    #toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      color: var(--text);
-      padding: 10px 16px;
-      border-radius: var(--radius);
-      font-size: 12px;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: all 0.2s;
-      z-index: 1000;
-      max-width: 320px;
-    }
-
+    /* TOAST */
+    #toast { position: fixed; bottom: 20px; right: 20px; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; box-shadow: var(--shadow-md); opacity: 0; transform: translateY(6px); transition: all .2s; z-index: 9999; max-width: 300px; }
     #toast.show { opacity: 1; transform: translateY(0); }
-    #toast.success { border-left: 3px solid var(--ok); }
-    #toast.error { border-left: 3px solid var(--danger); }
-    #toast.saving { border-left: 3px solid var(--warn); }
-
-    /* ─── EMPTY ─── */
-    .empty-state {
-      text-align: center;
-      padding: 40px;
-      color: var(--text3);
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    /* ─── PROGRESS BAR ─── */
-    .progress-bar-wrap {
-      height: 3px;
-      background: var(--border);
-      border-radius: 2px;
-      margin: 4px 0;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      border-radius: 2px;
-      background: var(--card-color, var(--accent));
-      transition: width 0.4s ease;
-    }
-
-    /* ─── LAST SYNC ─── */
-    .last-sync {
-      font-size: 9px;
-      color: var(--text3);
-      letter-spacing: 0.1em;
-    }
+    #toast.success { background: var(--ok-bg); color: var(--ok); border: 1px solid #86efac; }
+    #toast.error   { background: var(--danger-bg); color: var(--danger); border: 1px solid #fca5a5; }
+    #toast.saving  { background: var(--warn-bg); color: var(--warn); border: 1px solid #fcd34d; }
   </style>
 </head>
 <body>
-
 <header>
-  <div class="logo-block">
-    <div class="logo-mark">
-      <svg viewBox="0 0 18 18" fill="none">
-        <rect x="1" y="1" width="7" height="7" fill="#0b0d10" rx="1"/>
-        <rect x="10" y="1" width="7" height="7" fill="#0b0d10" rx="1"/>
-        <rect x="1" y="10" width="7" height="7" fill="#0b0d10" rx="1"/>
-        <rect x="10" y="10" width="7" height="7" fill="#0b0d10" rx="1"/>
-        <rect x="3" y="3" width="3" height="3" fill="#c8f032"/>
-        <rect x="12" y="3" width="3" height="3" fill="#c8f032"/>
-        <rect x="3" y="12" width="3" height="3" fill="#c8f032"/>
-        <rect x="12" y="12" width="3" height="3" fill="#c8f032"/>
-      </svg>
-    </div>
+  <div class="hinner">
+    <div class="logo-icon">PS</div>
     <div>
-      <div class="logo-text">PRIME Sport Santé</div>
+      <div class="logo-name">PRIME Sport Santé</div>
       <div class="logo-sub">Suivi des investissements — JL PRIME</div>
     </div>
-  </div>
-
-  <div class="header-divider"></div>
-
-  <span class="last-sync" id="lastSync">—</span>
-
-  <button class="sync-btn" id="syncBtn" onclick="loadData()">
-    <span id="syncIcon">↻</span> Actualiser
-  </button>
-
-  <div class="grand-total-header">
-    <div class="grand-total-label">Total général HT</div>
-    <div class="grand-total-value" id="grandTotalHT">—</div>
-    <div class="grand-total-ttc" id="grandTotalTTC">— TTC</div>
+    <div class="hsep"></div>
+    <span class="last-sync" id="lastSync"></span>
+    <button class="sync-btn" id="syncBtn" onclick="loadData()">
+      <span id="syncIcon">↻</span> Actualiser
+    </button>
+    <div>
+      <div class="gtotal-label">Total général HT</div>
+      <div class="gtotal-val" id="gHT">—</div>
+      <div class="gtotal-ttc" id="gTTC"></div>
+    </div>
   </div>
 </header>
 
-<div class="tabs-bar" id="tabsBar">
-  <!-- generated -->
-</div>
-
-<main id="mainContent">
-  <div class="loading-screen">
-    <div class="loading-bar"><div class="loading-fill"></div></div>
-    <div class="loading-text">Connexion à Google Sheets…</div>
+<div class="content">
+  <div id="app">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div class="loading-txt">Chargement depuis Google Sheets…</div>
+    </div>
   </div>
-</main>
-
+</div>
 <div id="toast"></div>
 
 <script>
-// ─── CONFIG ───
-const TABS_META = [
-  { key: 'back',      label: 'PRIME BACK',        color: '#3a8fd4' },
-  { key: 'fit',       label: 'PRIME FIT',          color: '#3ab870' },
-  { key: 'well',      label: 'PRIME WELL',         color: '#9a5cd4' },
-  { key: 'mobilier',  label: 'MOBILIER',           color: '#d4913a' },
-  { key: 'av',        label: 'INFO & AV',          color: '#3ab8b8' },
-  { key: 'agm',       label: 'AGM CONSTRUCTIONS',  color: '#d45a5a' },
+const TABS = [
+  { key:'back',     label:'PRIME BACK',       color:'#2563eb' },
+  { key:'fit',      label:'PRIME FIT',         color:'#16a34a' },
+  { key:'well',     label:'PRIME WELL',        color:'#7c3aed' },
+  { key:'mobilier', label:'MOBILIER',          color:'#d97706' },
+  { key:'av',       label:'INFO & AV',         color:'#0891b2' },
+  { key:'agm',      label:'AGM CONSTRUCTIONS', color:'#dc2626' },
 ];
-
 const STATUTS = [
-  { value: 'En attente',           label: 'En attente',           cls: 'statut-attente' },
-  { value: 'Commandé',             label: 'Commandé',             cls: 'statut-commande' },
-  { value: 'En cours de livraison',label: 'En cours de livraison',cls: 'statut-livraison' },
-  { value: 'Livré',                label: 'Livré',                cls: 'statut-livre' },
-  { value: 'Annulé',               label: 'Annulé',               cls: 'statut-annule' },
+  { v:'En attente',            sc:'sa', bc:'ba' },
+  { v:'Commandé',              sc:'sc', bc:'bc' },
+  { v:'En cours de livraison', sc:'sl', bc:'bl' },
+  { v:'Livré',                 sc:'sv', bc:'bv' },
+  { v:'Annulé',                sc:'sn', bc:'bn' },
 ];
+let appData = null, activeTab = 'back', saving = false;
 
-// ─── STATE ───
-let appData = null;
-let activeTab = 'back';
-let saving = false;
+const fmt = (n, d=0) => n==null||isNaN(n) ? '—' :
+  new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',minimumFractionDigits:d,maximumFractionDigits:d}).format(n);
 
-// ─── UTILS ───
-function fmt(n) {
-  if (!n && n !== 0) return '—';
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
-}
+const stCls = s => STATUTS.find(x=>x.v===s)?.sc || 'sa';
+const bdCls = s => STATUTS.find(x=>x.v===s)?.bc || 'ba';
 
-function fmtInput(n) {
-  if (!n && n !== 0) return '';
-  return String(n).replace('.', ',');
-}
-
-function parseInput(s) {
-  return parseFloat(String(s).replace(/\s/g, '').replace(',', '.')) || 0;
-}
-
-function statutCls(s) {
-  const map = {
-    'En attente': 'statut-attente',
-    'Commandé': 'statut-commande',
-    'En cours de livraison': 'statut-livraison',
-    'Livré': 'statut-livre',
-    'Annulé': 'statut-annule',
-  };
-  return map[s] || 'statut-attente';
-}
-
-function badgeCls(s) {
-  const map = {
-    'En attente': 'badge-attente',
-    'Commandé': 'badge-commande',
-    'En cours de livraison': 'badge-livraison',
-    'Livré': 'badge-livre',
-    'Annulé': 'badge-annule',
-  };
-  return map[s] || 'badge-attente';
-}
-
-function showToast(msg, type = 'success') {
+function toast(msg, type='success') {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `show ${type}`;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.className = ''; }, 3000);
+  t.textContent = msg; t.className = `show ${type}`;
+  clearTimeout(t._t); t._t = setTimeout(()=>t.className='', 3000);
 }
 
-// ─── STATUT COUNTS ───
-function statutCounts(tab) {
-  const counts = {};
-  (tab.sections || []).forEach(s => s.items.forEach(item => {
-    counts[item.statut] = (counts[item.statut] || 0) + 1;
-  }));
-  return counts;
+function counts(tab) {
+  const c={};
+  (tab.sections||[]).forEach(s=>s.items.forEach(i=>{ c[i.statut]=(c[i.statut]||0)+1; }));
+  return c;
 }
 
-// ─── TABS ───
-function renderTabs() {
-  const bar = document.getElementById('tabsBar');
-  bar.innerHTML = TABS_META.map(t => {
-    const tabData = appData ? appData.tabs[t.key] : null;
-    const total = tabData ? fmt(tabData.total_ht) : '—';
-    return `<div class="tab ${t.key === activeTab ? 'active' : ''}"
-               style="--tab-color: ${t.color}"
-               onclick="switchTab('${t.key}')">
-      <span class="tab-dot"></span>
-      ${t.label}
-      <span class="tab-total">${total}</span>
+function render() {
+  if (!appData) return;
+  const tab  = appData.tabs[activeTab];
+  const meta = TABS.find(t=>t.key===activeTab);
+
+  // Cards
+  const cards = TABS.map(t => {
+    const td = appData.tabs[t.key]; if (!td) return '';
+    const pct = appData.grand_total_ht>0 ? td.total_ht/appData.grand_total_ht*100 : 0;
+    const cc = counts(td);
+    const badges = Object.entries(cc).map(([s,n])=>
+      `<span class="badge ${bdCls(s)}">${n} ${s==='En cours de livraison'?'livr.':s.toLowerCase()}</span>`
+    ).join('');
+    return `<div class="card ${t.key===activeTab?'active':''}" style="--cc:${t.color}" onclick="switchTab('${t.key}')">
+      <div class="card-lbl">${t.label}</div>
+      <div class="card-amt">${fmt(td.total_ht)}</div>
+      <div class="card-ttc">${fmt(td.total_ttc)} TTC</div>
+      <div class="card-bar"><div class="card-bar-fill" style="width:${pct.toFixed(1)}%"></div></div>
+      <div class="badges">${badges}</div>
     </div>`;
   }).join('');
-}
 
-function switchTab(key) {
-  activeTab = key;
-  renderTabs();
-  renderContent();
-}
+  // Tabs
+  const tabsHtml = TABS.map(t => {
+    const td = appData.tabs[t.key];
+    return `<div class="tab ${t.key===activeTab?'active':''}" style="--tc:${t.color}" onclick="switchTab('${t.key}')">
+      <span class="tdot"></span>${t.label}
+      <span class="tamt">${td?fmt(td.total_ht):'—'}</span>
+    </div>`;
+  }).join('');
 
-// ─── SUMMARY CARDS ───
-function renderSummaryCards() {
-  if (!appData) return '';
-  return `<div class="summary-grid">
-    ${TABS_META.map(t => {
-      const tab = appData.tabs[t.key];
-      if (!tab) return '';
-      const counts = statutCounts(tab);
-      const pct = appData.grand_total_ht > 0 ? (tab.total_ht / appData.grand_total_ht * 100) : 0;
-      return `<div class="summary-card ${t.key === activeTab ? 'active' : ''}"
-                   style="--card-color: ${t.color}"
-                   onclick="switchTab('${t.key}')">
-        <div class="card-label">${t.label}</div>
-        <div class="card-amount">${fmt(tab.total_ht)}</div>
-        <div class="card-ttc">${fmt(tab.total_ttc)} TTC</div>
-        <div class="progress-bar-wrap" style="--card-color: ${t.color}">
-          <div class="progress-bar-fill" style="width: ${pct.toFixed(1)}%; background: ${t.color}"></div>
-        </div>
-        <div class="card-statuts">
-          ${Object.entries(counts).map(([s, n]) =>
-            `<span class="badge ${badgeCls(s)}">${n} ${s === 'En cours de livraison' ? 'livr.' : s.toLowerCase()}</span>`
-          ).join('')}
-        </div>
-      </div>`;
-    }).join('')}
-  </div>`;
-}
+  // Table rows
+  let rows = '';
+  if (tab?.sections?.length) {
+    tab.sections.forEach((sec, si) => {
+      const sHT  = sec.items.reduce((a,i)=>a+(i.total_ht||0),0);
+      const sTTC = sec.items.reduce((a,i)=>a+(i.total_ttc||0),0);
+      rows += `<tr class="sec"><td colspan="7">▸ ${sec.name}</td><td class="r">${fmt(sHT)}</td><td class="r">${fmt(sTTC)}</td></tr>`;
 
-// ─── TABLE ───
-function renderTable(tab) {
-  if (!tab || !tab.sections || tab.sections.length === 0) {
-    return `<div class="empty-state">Aucune donnée disponible pour cet onglet</div>`;
-  }
+      sec.items.forEach((item, ii) => {
+        const opts = STATUTS.map(s=>`<option value="${s.v}" ${item.statut===s.v?'selected':''}>${s.v}</option>`).join('');
+        rows += `<tr data-tab="${activeTab}" data-si="${si}" data-ii="${ii}" data-row="${item.row_index}" data-sheet="${tab.sheet_name}">
+          <td class="desig"><span class="ed" data-field="designation" onclick="startEdit(this,event)">${item.designation||'—'}</span></td>
+          <td class="r dim">${item.qty??'—'}</td>
+          <td class="r"><span class="ed" data-field="prix_ht" onclick="startEdit(this,event)">${item.prix_ht!=null?fmt(item.prix_ht):'—'}</span></td>
+          <td class="r"><span class="ed" data-field="prix_ttc" onclick="startEdit(this,event)">${item.prix_ttc!=null?fmt(item.prix_ttc):'—'}</span></td>
+          <td class="r"><span class="ed" data-field="total_ht" onclick="startEdit(this,event)">${item.total_ht!=null?fmt(item.total_ht):'—'}</span></td>
+          <td class="r"><span class="ed" data-field="total_ttc" onclick="startEdit(this,event)">${item.total_ttc!=null?fmt(item.total_ttc):'—'}</span></td>
+          <td><span class="ed" data-field="fournisseur" onclick="startEdit(this,event)">${item.fournisseur||'—'}</span></td>
+          <td><select class="ss ${stCls(item.statut)}" data-field="statut" onchange="onStatut(this)">${opts}</select></td>
+          <td><span class="ed" data-field="date_livraison" onclick="startEdit(this,event)">${item.date_livraison||'—'}</span></td>
+        </tr>`;
+      });
 
-  let html = `<table>
-    <thead>
-      <tr>
-        <th class="col-desig">Désignation</th>
-        <th class="col-qty" style="text-align:right">Qté</th>
-        <th class="col-pu-ht" style="text-align:right">PU HT</th>
-        <th class="col-pu-ttc" style="text-align:right">PU TTC</th>
-        <th class="col-tot-ht" style="text-align:right">Total HT</th>
-        <th class="col-tot-ttc" style="text-align:right">Total TTC</th>
-        <th class="col-fourn">Fournisseur</th>
-        <th class="col-statut">Statut</th>
-        <th class="col-date">Livraison</th>
-      </tr>
-    </thead>
-    <tbody>`;
-
-  tab.sections.forEach((section, si) => {
-    // Section header
-    const sectionTotalHT = section.items.reduce((s, i) => s + (i.total_ht || 0), 0);
-    html += `<tr>
-      <td colspan="9">
-        <div class="section-header">
-          <span class="section-title">▸ ${section.name}</span>
-          <span class="section-total">${fmt(sectionTotalHT)} HT</span>
-        </div>
-      </td>
-    </tr>`;
-
-    section.items.forEach((item, ii) => {
-      const statOpts = STATUTS.map(s =>
-        `<option value="${s.value}" ${item.statut === s.value ? 'selected' : ''}>${s.label}</option>`
-      ).join('');
-
-      html += `<tr data-tab="${tab.key}" data-si="${si}" data-ii="${ii}" data-row="${item.row_index}" data-sheet="${tab.sheet_name}">
-        <td class="col-desig designation">${item.designation}</td>
-        <td class="col-qty number ${!item.qty ? 'zero' : ''}">${item.qty || '—'}</td>
-        <td class="col-pu-ht number ${!item.prix_ht ? 'zero' : ''}">
-          <span class="editable" data-field="prix_ht" onclick="startEdit(this, event)">${item.prix_ht ? fmt(item.prix_ht) : '—'}</span>
-        </td>
-        <td class="col-pu-ttc number ${!item.prix_ttc ? 'zero' : ''}">
-          <span class="editable" data-field="prix_ttc" onclick="startEdit(this, event)">${item.prix_ttc ? fmt(item.prix_ttc) : '—'}</span>
-        </td>
-        <td class="col-tot-ht number ${!item.total_ht ? 'zero' : ''}">
-          <span class="editable" data-field="total_ht" onclick="startEdit(this, event)">${item.total_ht ? fmt(item.total_ht) : '—'}</span>
-        </td>
-        <td class="col-tot-ttc number ${!item.total_ttc ? 'zero' : ''}">
-          <span class="editable" data-field="total_ttc" onclick="startEdit(this, event)">${item.total_ttc ? fmt(item.total_ttc) : '—'}</span>
-        </td>
-        <td class="col-fourn">
-          <span class="editable" data-field="fournisseur" onclick="startEdit(this, event)">${item.fournisseur || '—'}</span>
-        </td>
-        <td class="col-statut">
-          <select class="statut-select ${statutCls(item.statut)}"
-                  data-field="statut"
-                  onchange="saveField(this, event)">
-            ${statOpts}
-          </select>
-        </td>
-        <td class="col-date">
-          <span class="editable" data-field="date_livraison" onclick="startEdit(this, event)">${item.date_livraison || '—'}</span>
-        </td>
+      rows += `<tr class="sub">
+        <td colspan="7" style="padding-left:20px">Sous-total — ${sec.name}</td>
+        <td class="r">${fmt(sHT)}</td><td class="r">${fmt(sTTC)}</td>
       </tr>`;
     });
-
-    // Subtotal
-    const subTTC = section.items.reduce((s, i) => s + (i.total_ttc || 0), 0);
-    html += `<tr class="subtotal-row">
-      <td colspan="4">Sous-total — ${section.name}</td>
-      <td class="number">${fmt(sectionTotalHT)}</td>
-      <td class="number">${fmt(subTTC)}</td>
-      <td colspan="3"></td>
+    rows += `<tr class="gtot">
+      <td colspan="7">TOTAL — ${meta?.label}</td>
+      <td class="r">${fmt(tab.total_ht)}</td>
+      <td class="r">${fmt(tab.total_ttc)}</td>
     </tr>`;
-  });
+  } else {
+    rows = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text3)">Aucune donnée</td></tr>`;
+  }
 
-  // Grand total for this tab
-  html += `<tr class="subtotal-row">
-    <td colspan="4" style="color: var(--text2); font-size:11px">TOTAL — ${tab.label}</td>
-    <td class="number" style="color: var(--text); font-size:12px">${fmt(tab.total_ht)}</td>
-    <td class="number" style="color: var(--text2); font-size:12px">${fmt(tab.total_ttc)}</td>
-    <td colspan="3"></td>
-  </tr>`;
-
-  html += `</tbody></table>`;
-  return html;
+  document.getElementById('app').innerHTML = `
+    <div class="cards">${cards}</div>
+    <div class="tabs">${tabsHtml}</div>
+    <div class="tcard">
+      <div class="thead-bar">
+        <div class="thead-title" style="color:${meta?.color}">${meta?.label}</div>
+        ${tab?.error?`<span style="color:var(--danger);font-size:12px">⚠ ${tab.error}</span>`:''}
+        <div class="totals">
+          <div><div class="tot-lbl">Total HT</div><div class="tot-val">${fmt(tab?.total_ht)}</div></div>
+          <div><div class="tot-lbl">Total TTC</div><div class="tot-val">${fmt(tab?.total_ttc)}</div></div>
+        </div>
+      </div>
+      <div class="twrap">
+        <table>
+          <thead><tr>
+            <th style="width:25%">Désignation</th>
+            <th class="r" style="width:5%">Qté</th>
+            <th class="r" style="width:9%">PU HT</th>
+            <th class="r" style="width:9%">PU TTC</th>
+            <th class="r" style="width:9%">Total HT</th>
+            <th class="r" style="width:9%">Total TTC</th>
+            <th style="width:12%">Fournisseur</th>
+            <th style="width:13%">Statut</th>
+            <th style="width:9%">Livraison</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
 }
 
-// ─── RENDER CONTENT ───
-function renderContent() {
-  const main = document.getElementById('mainContent');
-  if (!appData) return;
+function switchTab(key) { activeTab = key; render(); }
 
-  const tab = appData.tabs[activeTab];
-  const color = TABS_META.find(t => t.key === activeTab)?.color || '#c8f032';
-
-  main.innerHTML = renderSummaryCards() + `
-    <div style="border-left: 2px solid ${color}; padding-left: 16px; margin-bottom: 20px">
-      <div style="font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 2px">
-        ${tab?.label || activeTab.toUpperCase()}
-      </div>
-      <div style="font-size: 11px; color: var(--text3)">
-        ${tab?.total_ht ? fmt(tab.total_ht) + ' HT' : 'Aucune donnée'} 
-        ${tab?.total_ttc ? '· ' + fmt(tab.total_ttc) + ' TTC' : ''}
-      </div>
-    </div>
-    ${tab?.error ? `<div class="error-box">⚠ Erreur de chargement : ${tab.error}</div>` : ''}
-    ${renderTable(tab)}
-  `;
-}
-
-// ─── INLINE EDIT ───
 function startEdit(span, event) {
   event.stopPropagation();
   if (span.querySelector('input')) return;
-
   const row = span.closest('tr');
   const field = span.dataset.field;
-  const si = parseInt(row.dataset.si);
-  const ii = parseInt(row.dataset.ii);
-  const tabKey = row.dataset.tab;
-  const item = appData.tabs[tabKey].sections[si].items[ii];
+  const item = appData.tabs[activeTab].sections[+row.dataset.si].items[+row.dataset.ii];
+  const isNum = ['prix_ht','prix_ttc','total_ht','total_ttc'].includes(field);
+  const cur = item[field];
 
-  const currentVal = item[field];
-  const isNumber = ['prix_ht', 'prix_ttc', 'total_ht', 'total_ttc'].includes(field);
-
-  const input = document.createElement('input');
-  input.className = 'edit-input';
-  input.value = isNumber ? (currentVal || '') : (currentVal || '');
-  input.type = isNumber ? 'number' : 'text';
-  if (isNumber) { input.step = '0.01'; input.min = '0'; }
-
-  span.innerHTML = '';
-  span.appendChild(input);
-  input.focus();
-  input.select();
+  const inp = document.createElement('input');
+  inp.className = 'einput';
+  inp.type = isNum ? 'number' : 'text';
+  inp.value = cur ?? '';
+  if (isNum) { inp.step = '0.01'; inp.min = '0'; }
+  span.innerHTML = ''; span.appendChild(inp);
+  inp.focus(); inp.select();
 
   const commit = () => {
-    const newVal = isNumber ? parseInput(input.value) : input.value.trim();
-    item[field] = newVal || (isNumber ? null : '');
-    span.innerHTML = isNumber ? (newVal ? fmt(newVal) : '—') : (newVal || '—');
-    saveField(span, event, field, newVal, row);
+    const raw = inp.value.trim();
+    const newVal = isNum ? (raw===''?null:parseFloat(raw.replace(',','.'))) : (raw||null);
+    item[field] = newVal;
+    span.innerHTML = isNum ? (newVal!=null?fmt(newVal):'—') : (newVal||'—');
+    doSave(row, field, newVal??'');
+    recompute();
   };
-
-  input.addEventListener('blur', commit);
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); commit(); }
-    if (e.key === 'Escape') {
-      span.innerHTML = isNumber ? (currentVal ? fmt(currentVal) : '—') : (currentVal || '—');
-    }
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', e => {
+    if (e.key==='Enter') { e.preventDefault(); commit(); }
+    if (e.key==='Escape') span.innerHTML = isNum?(cur!=null?fmt(cur):'—'):(cur||'—');
   });
 }
 
-// ─── SAVE FIELD ───
-async function saveField(el, event, fieldOverride, valueOverride, rowOverride) {
-  if (saving) return;
+function onStatut(sel) {
+  const row = sel.closest('tr');
+  const item = appData.tabs[activeTab].sections[+row.dataset.si].items[+row.dataset.ii];
+  item.statut = sel.value;
+  sel.className = `ss ${stCls(sel.value)}`;
+  doSave(row, 'statut', sel.value);
+}
 
-  const row = rowOverride || el.closest('tr');
-  const sheetName = row.dataset.sheet;
-  const rowIndex = parseInt(row.dataset.row);
-  const tabKey = row.dataset.tab;
-  const si = parseInt(row.dataset.si);
-  const ii = parseInt(row.dataset.ii);
-
-  const field = fieldOverride || el.dataset.field;
-  let value = valueOverride !== undefined ? valueOverride : el.value;
-
-  // Update local state for select
-  if (el.tagName === 'SELECT') {
-    const item = appData.tabs[tabKey].sections[si].items[ii];
-    item.statut = value;
-    el.className = `statut-select ${statutCls(value)}`;
-    // Re-render summary cards only
-    updateSummaryCards();
-  }
-
-  showToast('Enregistrement…', 'saving');
-  saving = true;
-
+async function doSave(row, field, value) {
+  if (saving) return; saving = true;
+  toast('Enregistrement…','saving');
   try {
-    const res = await fetch('/api/sheets-update', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sheet_name: sheetName, row_index: rowIndex, field, value }),
+    const r = await fetch('/api/sheets-update',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ sheet_name:row.dataset.sheet, row_index:+row.dataset.row, field, value })
     });
-    const data = await res.json();
-    if (data.success) {
-      showToast('✓ Enregistré dans Google Sheets', 'success');
-      // Update totals
-      recomputeTotals();
-    } else {
-      showToast(`✗ Erreur : ${data.error}`, 'error');
-    }
-  } catch (e) {
-    showToast(`✗ Connexion impossible : ${e.message}`, 'error');
-  } finally {
-    saving = false;
-  }
+    const d = await r.json();
+    d.success ? toast('✓ Enregistré','success') : toast(`✗ ${d.error}`,'error');
+  } catch(e) { toast(`✗ ${e.message}`,'error'); }
+  finally { saving = false; }
 }
 
-function recomputeTotals() {
-  if (!appData) return;
-  let grand_ht = 0, grand_ttc = 0;
+function recompute() {
+  let gHT=0, gTTC=0;
   Object.values(appData.tabs).forEach(tab => {
-    tab.total_ht = 0; tab.total_ttc = 0;
-    (tab.sections || []).forEach(s => s.items.forEach(item => {
-      tab.total_ht += item.total_ht || 0;
-      tab.total_ttc += item.total_ttc || 0;
-    }));
-    grand_ht += tab.total_ht;
-    grand_ttc += tab.total_ttc;
+    tab.total_ht=0; tab.total_ttc=0;
+    (tab.sections||[]).forEach(s=>s.items.forEach(i=>{ tab.total_ht+=(i.total_ht||0); tab.total_ttc+=(i.total_ttc||0); }));
+    gHT+=tab.total_ht; gTTC+=tab.total_ttc;
   });
-  appData.grand_total_ht = grand_ht;
-  appData.grand_total_ttc = grand_ttc;
-  document.getElementById('grandTotalHT').textContent = fmt(grand_ht);
-  document.getElementById('grandTotalTTC').textContent = fmt(grand_ttc) + ' TTC';
-  renderTabs();
+  appData.grand_total_ht=gHT; appData.grand_total_ttc=gTTC;
+  document.getElementById('gHT').textContent  = fmt(gHT);
+  document.getElementById('gTTC').textContent = fmt(gTTC)+' TTC';
 }
 
-function updateSummaryCards() {
-  // Just re-render the summary section without touching the table
-  const grid = document.querySelector('.summary-grid');
-  if (grid) {
-    grid.outerHTML = '';
-    const main = document.getElementById('mainContent');
-    main.insertAdjacentHTML('afterbegin', renderSummaryCards());
-  }
-}
-
-// ─── LOAD DATA ───
 async function loadData() {
-  const btn = document.getElementById('syncBtn');
-  const icon = document.getElementById('syncIcon');
-  btn.classList.add('loading');
-  icon.classList.add('spin');
-  icon.textContent = '↻';
-
-  if (!appData) {
-    document.getElementById('mainContent').innerHTML = `
-      <div class="loading-screen">
-        <div class="loading-bar"><div class="loading-fill"></div></div>
-        <div class="loading-text">Chargement depuis Google Sheets…</div>
-      </div>`;
-  }
-
+  const btn=document.getElementById('syncBtn'), icon=document.getElementById('syncIcon');
+  btn.disabled=true; icon.classList.add('spinning');
   try {
-    const res = await fetch('/api/sheets-read');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    appData = await res.json();
-
-    document.getElementById('grandTotalHT').textContent = fmt(appData.grand_total_ht);
-    document.getElementById('grandTotalTTC').textContent = fmt(appData.grand_total_ttc) + ' TTC';
-
-    const now = new Date();
+    const r = await fetch('/api/sheets-read');
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    appData = await r.json();
+    document.getElementById('gHT').textContent  = fmt(appData.grand_total_ht);
+    document.getElementById('gTTC').textContent = fmt(appData.grand_total_ttc)+' TTC';
     document.getElementById('lastSync').textContent =
-      `Sync ${now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
-
-    renderTabs();
-    renderContent();
-  } catch (e) {
-    document.getElementById('mainContent').innerHTML = `
-      <div class="error-box">
-        <strong>Impossible de charger les données</strong><br><br>
-        ${e.message}<br><br>
-        Vérifiez que les variables d'environnement Netlify sont correctement configurées :<br>
-        <code>GOOGLE_SPREADSHEET_ID</code> et <code>GOOGLE_SERVICE_ACCOUNT_JSON</code>
-      </div>`;
-  } finally {
-    btn.classList.remove('loading');
-    icon.classList.remove('spin');
-  }
+      'Sync '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    render();
+  } catch(e) {
+    document.getElementById('app').innerHTML=`<div class="errbox">
+      <strong>Impossible de charger les données</strong><br>${e.message}<br><br>
+      Vérifiez que les variables d'environnement Netlify sont correctement configurées :<br>
+      <code>GOOGLE_SPREADSHEET_ID</code> et <code>GOOGLE_SERVICE_ACCOUNT_JSON</code>
+    </div>`;
+  } finally { btn.disabled=false; icon.classList.remove('spinning'); }
 }
 
-// ─── INIT ───
-renderTabs();
 loadData();
-setInterval(loadData, 5 * 60 * 1000); // Auto-refresh toutes les 5 minutes
+setInterval(loadData, 5*60*1000);
 </script>
 </body>
 </html>

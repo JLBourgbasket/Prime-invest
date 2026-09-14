@@ -14,6 +14,7 @@ function getAuth() {
 
 // Column mapping: 0-indexed → A, B, C...
 const COL_MAP = {
+  designation: 0, // A
   qty: 1,         // B
   prix_ht: 2,     // C
   prix_ttc: 3,    // D
