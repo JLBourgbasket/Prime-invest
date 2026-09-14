@@ -369,7 +369,14 @@ async function loadData() {
   btn.disabled=true; icon.classList.add('spinning');
   try {
     const r = await fetch('/api/sheets-read');
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    if (!r.ok) {
+      let detail = `HTTP ${r.status}`;
+      try {
+        const errBody = await r.json();
+        if (errBody && errBody.error) detail = errBody.error;
+      } catch (_) { /* body wasn't JSON, keep generic detail */ }
+      throw new Error(detail);
+    }
     appData = await r.json();
     document.getElementById('gHT').textContent  = fmt(appData.grand_total_ht);
     document.getElementById('gTTC').textContent = fmt(appData.grand_total_ttc)+' TTC';

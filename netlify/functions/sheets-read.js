@@ -117,6 +117,7 @@ exports.handler = async (event) => {
 
     return { statusCode: 200, headers, body: JSON.stringify({ tabs: result, grand_total_ht, grand_total_ttc }) };
   } catch (err) {
+    console.error("sheets-read error:", err);
     return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
   }
 };

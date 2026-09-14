@@ -76,6 +76,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({ success: true, range, value }),
     };
   } catch (err) {
+    console.error("sheets-update error:", err);
     return {
       statusCode: 500,
       headers,
