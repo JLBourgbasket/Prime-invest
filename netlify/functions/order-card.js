@@ -29,6 +29,7 @@ exports.handler = async (event) => {
     return reply(401, { error: 'Code d’accès incorrect.' });
   }
 
+  let uploaded = false;
   try {
     const { sheet, row, designation, card, previous, groupId, members, allAgm, listGroups, pdf } = JSON.parse(event.body);
     const grouped = Boolean(groupId || members || allAgm || listGroups);
@@ -149,6 +150,7 @@ exports.handler = async (event) => {
         requestBody: { name: pdf.name, mimeType: 'application/pdf', parents: [folder] },
         media: { mimeType: 'application/pdf', body: Readable.from([bytes]) },
       });
+      uploaded = true;
       clean.pdfId = result.data.id;
       clean.pdfName = pdf.name;
     }
@@ -158,10 +160,21 @@ exports.handler = async (event) => {
     const payload = {
       spreadsheetId, range, valueInputOption: 'RAW', requestBody: { values: [[version]] },
     };
-    if (append) await values.append({ ...payload, insertDataOption: 'OVERWRITE' });
-    else await values.update(payload);
+    if (append) {
+      const saved = await values.append({ ...payload, insertDataOption: 'OVERWRITE' });
+      const written = saved.data.updates?.updatedRange;
+      if (!written || !/!O[1-9]\d*(?::O[1-9]\d*)?$/.test(written)) {
+        throw new Error('Écriture hors de la colonne O.');
+      }
+      const check = await values.get({ spreadsheetId, range: written });
+      if (check.data.values?.[0]?.[0] !== version) {
+        throw new Error('Commande groupée introuvable après écriture.');
+      }
+    } else {
+      await values.update(payload);
+    }
     return reply(200, { card: clean, version, groupId: record.id });
   } catch {
-    return reply(500, { error: 'Enregistrement indisponible. Vérifiez les droits Sheets et Drive, puis réessayez.' });
+    return reply(500, { error: uploaded ? 'Le PDF est dans Drive, mais l’enregistrement de la fiche n’a pas pu être confirmé. Vérifiez la liste avant de réessayer.' : 'Enregistrement indisponible. Vérifiez les droits Sheets et Drive, puis réessayez.' });
   }
 };
