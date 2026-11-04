@@ -269,6 +269,19 @@ function render() {
     </div>`;
   }).join('');
 
+  const contactsTab = `<button type="button" class="tab ${activeTab === 'contacts' ? 'active' : ''}" style="--tc:var(--accent)" onclick="switchTab('contacts')">Contacts fournisseurs</button>`;
+  if (activeTab === 'contacts') {
+    document.getElementById('app').innerHTML = `<div class="cards">${cards}</div>
+      <div class="tabs">${tabsHtml}${contactsTab}</div><section class="tcard">
+      <div class="thead-bar"><h2>Contacts fournisseurs</h2>
+      <input id="contactSearch" type="search" aria-label="Rechercher un fournisseur ou un contact" placeholder="Rechercher…" oninput="renderContacts()"></div>
+      <div class="twrap"><table><thead><tr><th>Fournisseur</th><th>Contact</th><th>E-mail</th>
+      <th>Téléphone</th><th>Commandes liées</th></tr></thead><tbody id="contactRows"></tbody></table></div></section>`;
+    document.getElementById('contactSearch').value = contactSearch;
+    renderContacts();
+    return;
+  }
+
   // Table rows
   let rows = '';
   if (tab?.sections?.length) {
@@ -280,7 +293,7 @@ function render() {
       sec.items.forEach((item, ii) => {
         const opts = STATUTS.map(s=>`<option value="${s.v}" ${item.statut===s.v?'selected':''}>${s.v}</option>`).join('');
         rows += `<tr data-tab="${activeTab}" data-si="${si}" data-ii="${ii}" data-row="${item.row_index}" data-sheet="${tab.sheet_name}">
-          <td class="desig"><input type="checkbox" class="group-select" aria-label="Inclure ${esc(item.designation)} dans une commande groupée" ${selectedRows.get(activeTab)?.get(item.row_index) === item.designation ? 'checked' : ''} onchange="selectGroupRow(this)"> <span class="ed" data-field="designation" onclick="startEdit(this,event)">${esc(item.designation||'—')}</span>${item.total_ht > 200 ? '<button type="button" class="order-button" onclick="openOrder(this)">Fiche commande</button>' : ''}</td>
+          <td class="desig"><input type="checkbox" class="group-select" aria-label="Inclure ${esc(item.designation)} dans une commande groupée" ${selectedRows.get(activeTab)?.get(item.row_index) === item.designation ? 'checked' : ''} onchange="selectGroupRow(this)"> <span class="ed" data-field="designation" onclick="startEdit(this,event)">${esc(item.designation||'—')}</span>${item.total_ht > 200 || item.order_saved ? `<button type="button" class="order-button" onclick="openOrder(this)">${item.order_saved ? 'Voir la fiche commande' : 'Fiche commande'}</button>` : ''}${groupLinks(item)}</td>
           <td class="r dim">${item.qty??'—'}</td>
           <td class="r"><span class="ed" data-field="prix_ht" onclick="startEdit(this,event)">${item.prix_ht!=null?fmt(item.prix_ht):'—'}</span></td>
           <td class="r"><span class="ed" data-field="prix_ttc" onclick="startEdit(this,event)">${item.prix_ttc!=null?fmt(item.prix_ttc):'—'}</span></td>
@@ -308,7 +321,7 @@ function render() {
 
   document.getElementById('app').innerHTML = `
     <div class="cards">${cards}</div>
-    <div class="tabs">${tabsHtml}</div>
+    <div class="tabs">${tabsHtml}${contactsTab}</div>
     <div class="tcard">
       <div class="thead-bar">
         <div class="thead-title" style="color:${meta?.color}">${meta?.label}</div>
@@ -343,6 +356,7 @@ function render() {
 }
 
 const orderFields = [
+  ['supplier', 'Fournisseur'], ['contactRole', 'Rôle du contact'],
   ['reference', 'Référence commande'], ['document', 'Lien Drive du bon de commande', 'url'],
   ['contact', 'Contact fournisseur'], ['email', 'E-mail fournisseur', 'email'],
   ['phone', 'Téléphone fournisseur', 'tel'], ['owner', 'Responsable interne'],
@@ -484,6 +498,19 @@ function showOrderDocument(link) {
   else orderDocument.removeAttribute('href');
 }
 
+function groupLinks(item) {
+  return (item.order_groups || []).map((group, index) => {
+    const label = group.allAgm ? 'Voir la fiche globale AGM' :
+      'Voir la commande groupée' + (item.order_groups.length > 1 ? ' ' + (index + 1) : '');
+    return `<button type="button" class="order-button" data-group="${esc(group.id)}" onclick="openGroupFromRow(this)">${label}</button>`;
+  }).join('');
+}
+
+function openGroupFromRow(button) {
+  const { sheet } = button.closest('tr').dataset;
+  showOrder({ sheet, groupId: button.dataset.group }, button.textContent);
+}
+
 function openOrder(button) {
   const row = button.closest('tr').dataset;
   const item = appData.tabs[row.tab].sections[+row.si].items[+row.ii];
@@ -503,10 +530,14 @@ async function showOrder(target, summary, selectionTab) {
   orderMessage.textContent = 'Chargement…';
   orderDialog.showModal();
   try {
-    const { card, version, groupId } = await orderRequest(order.target);
+    const { card, version, groupId, group } = await orderRequest(order.target);
     if (activeOrder !== order || !orderDialog.open) return;
     order.version = version;
     if (groupId) order.target = { sheet: target.sheet, groupId };
+    if (group) {
+      document.getElementById('orderSummary').textContent = group.allAgm ? 'Ensemble des extras AGM' :
+        group.members.map(member => member.designation).join(' / ');
+    }
     showOrderPdf(card);
     for (const [name] of orderFields) orderForm.elements[name].value = card[name] || '';
     for (const [name] of orderSteps) orderForm.elements[name].checked = card[name] === true;
@@ -544,8 +575,10 @@ orderForm.addEventListener('submit', async event => {
       orderDialog.close();
       toast('Commande groupée enregistrée.');
       await listOrderGroups(order.target.sheet);
+      await loadData();
     } else {
       orderMessage.textContent = 'Fiche enregistrée.';
+      await loadData();
     }
   } catch (error) {
     if (activeOrder === order) orderMessage.textContent = error.message;
@@ -553,6 +586,54 @@ orderForm.addEventListener('submit', async event => {
     if (activeOrder === order) saveOrder.disabled = false;
   }
 });
+
+let contactSearch = '';
+let contactEntries = [];
+const contactKey = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+
+function contactNumber(value) {
+  const compact = value.replace(/[ .()–-]/g, '');
+  if (/^0[1-9]\d{8}$/.test(compact)) return '+33' + compact.slice(1);
+  if (/^00[1-9]\d{6,14}$/.test(compact)) return '+' + compact.slice(2);
+  return /^\+[1-9]\d{6,14}$/.test(compact) ? compact : '';
+}
+
+function renderContacts() {
+  contactSearch = document.getElementById('contactSearch').value;
+  const query = contactKey(contactSearch);
+  contactEntries = appData.contacts || [];
+  const contacts = [];
+  contactEntries.forEach((entry, index) => {
+    const same = entry.supplier && contacts.find(other =>
+      contactKey(other.supplier) === contactKey(entry.supplier) &&
+      ((entry.email && other.email && contactKey(other.email) === contactKey(entry.email)) ||
+        (contactNumber(entry.phone) && contactNumber(entry.phone) === contactNumber(other.phone))));
+    if (same) {
+      for (const key of ['contact', 'contactRole', 'email', 'phone']) same[key] ||= entry[key];
+      same.orders.push(index);
+    } else contacts.push({ ...entry, orders: [index] });
+  });
+  const rows = contacts.filter(c => contactKey([c.supplier, c.contact, c.contactRole, c.email, c.phone].join(' ')).includes(query))
+    .sort((a, b) => a.supplier.localeCompare(b.supplier, 'fr')).map(c => {
+      const number = contactNumber(c.phone);
+      const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email) ?
+        `<a href="mailto:${encodeURIComponent(c.email).replace(/%40/g, '@')}">${esc(c.email)}</a>` : esc(c.email || '—');
+      const phone = number ? `<a href="tel:${number}">${esc(c.phone)}</a> ·
+        <a href="https://wa.me/${number.slice(1)}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : esc(c.phone || '—');
+      const orders = c.orders.map(index => `<button type="button" class="order-button"
+        onclick="openContactOrder(${index})">${esc(contactEntries[index].label)}</button>`).join('');
+      return `<tr><td>${esc(c.supplier || 'À renseigner')}</td><td>${esc(c.contact || '—')}
+        ${c.contactRole ? `<br><small>${esc(c.contactRole)}</small>` : ''}</td>
+        <td>${email}</td><td>${phone}</td><td>${orders}</td></tr>`;
+    }).join('');
+  document.getElementById('contactRows').innerHTML = rows ||
+    '<tr><td colspan="5">Aucun contact trouvé. Les coordonnées saisies dans les fiches apparaissent ici.</td></tr>';
+}
+
+function openContactOrder(index) {
+  const entry = contactEntries[index];
+  if (entry) showOrder(entry.target, entry.label);
+}
 
 function switchTab(key) { activeTab = key; render(); }
 

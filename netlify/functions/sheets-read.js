@@ -95,14 +95,52 @@ exports.handler = async (event) => {
     const auth = getAuth();
     const sheets = google.sheets({ version: "v4", auth });
     const result = {};
+    const contacts = [];
+    function addContact(card, supplier, target, label) {
+      if (!card) return;
+      const contact = Object.fromEntries(['contact', 'contactRole', 'email', 'phone'].map(key =>
+        [key, typeof card[key] === 'string' ? card[key].trim() : '']));
+      if (!contact.contact && !contact.email && !contact.phone) return;
+      contacts.push({ ...contact, supplier: card.supplier?.trim() || supplier,
+        target, label: card.reference || label });
+    }
 
     for (const [sheetName, config] of Object.entries(SHEETS_CONFIG)) {
       try {
-        const response = await sheets.spreadsheets.values.get({
+        const response = await sheets.spreadsheets.values.batchGet({
           spreadsheetId: SPREADSHEET_ID,
-          range: `'${sheetName}'!A1:I200`,
+          ranges: [`'${sheetName}'!A1:N200`, `'${sheetName}'!O:O`],
         });
-        const parsed = parseRows(response.data.values || []);
+        const [items, registry] = response.data.valueRanges || [];
+        const rows = items?.values || [];
+        const parsed = parseRows(rows);
+        const groups = (registry?.values || []).flatMap(([raw]) => {
+          try {
+            const group = JSON.parse(raw);
+            return group.kind === 'prime-order-group' && /^[a-f0-9-]{36}$/.test(group.id) ? [group] : [];
+          } catch { return []; }
+        });
+        for (const item of parsed.sections.flatMap(section => section.items)) {
+          try {
+            const saved = JSON.parse(rows[item.row_index]?.[13]);
+            item.order_saved = saved?.kind === 'prime-order-card' && saved.designation === item.designation;
+            if (item.order_saved) addContact(saved.card, item.fournisseur,
+              { sheet: sheetName, row: item.row_index + 1, designation: item.designation }, item.designation);
+          } catch { item.order_saved = false; }
+          // Publish only the links needed by the table. Card contents require the access code.
+          item.order_groups = groups.filter(group => group.allAgm || group.members?.some(member =>
+            member.row === item.row_index + 1 && member.designation === item.designation
+          )).map(group => ({ id: group.id, allAgm: group.allAgm === true }));
+        }
+        for (const group of groups) {
+          const suppliers = new Set((group.members || []).flatMap(member => {
+            const row = rows[member.row - 1];
+            return String(row?.[0] || '').trim() === member.designation && row?.[6] ? [String(row[6]).trim()] : [];
+          }).filter(Boolean));
+          addContact(group.card, group.allAgm ? 'AGM Constructions' : suppliers.size === 1 ? [...suppliers][0] : '',
+            { sheet: sheetName, groupId: group.id }, group.allAgm ? 'Fiche globale AGM' :
+              (group.members || []).map(member => member.designation).join(' / '));
+        }
         result[config.key] = { ...config, sheet_name: sheetName, ...parsed };
       } catch (e) {
         result[config.key] = { ...config, sheet_name: sheetName, sections: [], total_ht: 0, total_ttc: 0, error: e.message };
@@ -115,7 +153,7 @@ exports.handler = async (event) => {
       grand_total_ttc += tab.total_ttc || 0;
     });
 
-    return { statusCode: 200, headers, body: JSON.stringify({ tabs: result, grand_total_ht, grand_total_ttc }) };
+    return { statusCode: 200, headers, body: JSON.stringify({ tabs: result, contacts, grand_total_ht, grand_total_ttc }) };
   } catch (err) {
     console.error("sheets-read error:", err);
     return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };

@@ -7,7 +7,7 @@ const tabs = new Set([
   'Extras AGM Constructions',
 ]);
 const fields = [
-  'reference', 'document', 'contact', 'email', 'phone', 'owner',
+  'reference', 'document', 'supplier', 'contactRole', 'contact', 'email', 'phone', 'owner',
   'delivery', 'installation', 'training', 'notes',
 ];
 const steps = ['ordered', 'delivered', 'installed', 'trained'];
@@ -98,7 +98,7 @@ exports.handler = async (event) => {
         spreadsheetId, range: `'${sheet}'!A${row}:N${row}`, valueRenderOption: 'UNFORMATTED_VALUE',
       });
       const cells = result.data.values?.[0] || [];
-      if (String(cells[0] || '').trim() !== designation || typeof cells[4] !== 'number' || cells[4] <= 200) {
+      if (String(cells[0] || '').trim() !== designation || (!cells[13] && (typeof cells[4] !== 'number' || cells[4] <= 200))) {
         return reply(409, { error: 'Cette ligne a changé. Actualisez le tableau.' });
       }
       stored = cells[13] || '';
@@ -109,13 +109,17 @@ exports.handler = async (event) => {
         }
       }
     }
-    if (card === undefined) return reply(200, { card: current.card || {}, version: stored, groupId: append ? undefined : current.id });
+    if (card === undefined) return reply(200, { card: current.card || {}, version: stored, groupId: append ? undefined : current.id, group: current.id ? { allAgm: current.allAgm, members: current.members } : undefined });
     if (stored !== previous) return reply(409, { error: 'La fiche a été modifiée. Rouvrez-la pour la recharger.' });
     if (!card || typeof card !== 'object' || Array.isArray(card)) {
       return reply(400, { error: 'Fiche invalide.' });
     }
     const clean = {};
     for (const field of fields) {
+      if (['supplier', 'contactRole'].includes(field) && card[field] === undefined) {
+        clean[field] = current.card?.[field] || '';
+        continue;
+      }
       if (typeof card[field] !== 'string' || card[field].length > (field === 'notes' ? 3000 : 500)) {
         return reply(400, { error: 'Un champ est invalide ou trop long.' });
       }
