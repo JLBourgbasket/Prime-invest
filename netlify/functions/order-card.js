@@ -163,6 +163,11 @@ exports.handler = async (event) => {
       clean.pdfId = result.data.id;
       clean.pdfName = pdf.name;
     }
+    if (Array.isArray(card.categories)) {
+      clean.categories = ['back', 'fit', 'well', 'mobilier', 'informatique', 'logiciel'].filter(key => card.categories.includes(key));
+    } else if (Array.isArray(current.card?.categories)) {
+      clean.categories = current.card.categories;
+    }
     const record = grouped ? { ...current, card: clean } :
       { kind: 'prime-order-card', designation, card: clean };
     const version = JSON.stringify(record);

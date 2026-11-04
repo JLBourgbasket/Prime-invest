@@ -137,6 +137,9 @@
     #orderFields { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
     #orderCard label { display: block; }
     #orderFields input, #orderFields textarea { display: block; width: 100%; padding: 7px; margin-top: 3px; }
+    .category-badge { display:inline-block; padding:3px 8px; margin:2px; border-radius:12px; background:var(--badge); color:white; font-weight:600; }
+    #orderCategories { margin-top:12px; padding:8px; }
+    #orderCategories label { display:inline-flex; gap:4px; margin:4px 8px; }
     #orderSteps, .order-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
     #orderMessage { margin-top: 10px; color: var(--danger); }
     .order-button.is-saved { background: #166534; color: #fff; border: 1px solid #14532d; border-radius: 5px; font-weight: 600; }
@@ -184,6 +187,7 @@
   <p id="orderSummary"></p>
   <form id="orderForm">
     <div id="orderFields"></div>
+    <fieldset id="orderCategories"><legend>Catégories</legend></fieldset>
     <div id="orderSteps"></div>
     <div class="order-actions">
       <label id="orderPdfLabel">Importer ou remplacer le bon de commande PDF
@@ -277,7 +281,7 @@ function render() {
       <div class="thead-bar"><h2>Contacts fournisseurs</h2>
       <input id="contactSearch" type="search" aria-label="Rechercher un fournisseur ou un contact" placeholder="Rechercher…" oninput="renderContacts()"></div>
       <div class="twrap"><table><thead><tr><th>Fournisseur</th><th>Contact</th><th>E-mail</th>
-      <th>Téléphone</th><th>Commandes liées</th></tr></thead><tbody id="contactRows"></tbody></table></div></section>`;
+      <th>Téléphone</th><th>Catégories</th><th>Commandes liées</th></tr></thead><tbody id="contactRows"></tbody></table></div></section>`;
     document.getElementById('contactSearch').value = contactSearch;
     renderContacts();
     return;
@@ -368,6 +372,17 @@ const orderFields = [
   ['delivery', 'Livraison prévue', 'date'], ['installation', 'Installation prévue', 'date'],
   ['training', 'Formation prévue', 'date'], ['notes', 'Consignes et informations utiles'],
 ];
+const categories = [
+  ['back', 'Prime Back', '#1d4ed8'], ['fit', 'Prime Fit', '#6b21a8'],
+  ['well', 'Prime Well', '#0f766e'], ['mobilier', 'Mobilier', '#92400e'],
+  ['informatique', 'Informatique', '#334155'], ['logiciel', 'Logiciel', '#9d174d'],
+];
+const categoryDefault = {
+  'Prime Back': 'back', 'Prime Fit': 'fit', 'Prime Well': 'well',
+  Mobilier: 'mobilier', 'Matériel Info & AV': 'informatique',
+};
+document.getElementById('orderCategories').insertAdjacentHTML('beforeend', categories.map(([key, label]) =>
+  `<label><input type="checkbox" name="category-${key}"> ${label}</label>`).join(''));
 const orderSteps = [
   ['ordered', 'Commandé'], ['delivered', 'Livré'],
   ['installed', 'Installé'], ['trained', 'Formation réalisée'],
@@ -545,6 +560,8 @@ async function showOrder(target, summary, selectionTab) {
     }
     showOrderPdf(card);
     for (const [name] of orderFields) orderForm.elements[name].value = card[name] || '';
+    const selectedCategories = card.categories || [categoryDefault[target.sheet]];
+    for (const [key] of categories) orderForm.elements['category-' + key].checked = selectedCategories.includes(key);
     for (const [name] of orderSteps) orderForm.elements[name].checked = card[name] === true;
     showOrderDocument(card.document);
     orderMessage.textContent = '';
@@ -560,6 +577,7 @@ orderForm.addEventListener('submit', async event => {
   const card = {};
   for (const [name] of orderFields) card[name] = orderForm.elements[name].value;
   for (const [name] of orderSteps) card[name] = orderForm.elements[name].checked;
+  card.categories = categories.filter(([key]) => orderForm.elements['category-' + key].checked).map(([key]) => key);
   saveOrder.disabled = true;
   orderMessage.textContent = 'Enregistrement…';
   try {
@@ -616,9 +634,10 @@ function renderContacts() {
     if (same) {
       for (const key of ['contact', 'contactRole', 'email', 'phone']) same[key] ||= entry[key];
       same.orders.push(index);
-    } else contacts.push({ ...entry, orders: [index] });
+      same.categories = [...new Set([...same.categories, ...(entry.categories || [])])];
+    } else contacts.push({ ...entry, categories: entry.categories || [], orders: [index] });
   });
-  const rows = contacts.filter(c => contactKey([c.supplier, c.contact, c.contactRole, c.email, c.phone].join(' ')).includes(query))
+  const rows = contacts.filter(c => contactKey([c.supplier, c.contact, c.contactRole, c.email, c.phone, ...categories.filter(([key]) => c.categories.includes(key)).map(([, label]) => label)].join(' ')).includes(query))
     .sort((a, b) => a.supplier.localeCompare(b.supplier, 'fr')).map(c => {
       const number = contactNumber(c.phone);
       const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email) ?
@@ -629,10 +648,11 @@ function renderContacts() {
         onclick="openContactOrder(${index})">${esc(contactEntries[index].label)}</button>`).join('');
       return `<tr><td>${esc(c.supplier || 'À renseigner')}</td><td>${esc(c.contact || '—')}
         ${c.contactRole ? `<br><small>${esc(c.contactRole)}</small>` : ''}</td>
-        <td>${email}</td><td>${phone}</td><td>${orders}</td></tr>`;
+        <td>${email}</td><td>${phone}</td><td>${categories.filter(([key]) => c.categories.includes(key))
+          .map(([, label, color]) => `<span class="category-badge" style="--badge:${color}">${label}</span>`).join('') || '—'}</td><td>${orders}</td></tr>`;
     }).join('');
   document.getElementById('contactRows').innerHTML = rows ||
-    '<tr><td colspan="5">Aucun contact trouvé. Les coordonnées saisies dans les fiches apparaissent ici.</td></tr>';
+    '<tr><td colspan="6">Aucun contact trouvé. Les coordonnées saisies dans les fiches apparaissent ici.</td></tr>';
 }
 
 function openContactOrder(index) {

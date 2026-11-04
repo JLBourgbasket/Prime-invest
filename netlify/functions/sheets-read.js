@@ -102,6 +102,9 @@ exports.handler = async (event) => {
         [key, typeof card[key] === 'string' ? card[key].trim() : '']));
       if (!contact.contact && !contact.email && !contact.phone) return;
       contacts.push({ ...contact, supplier: card.supplier?.trim() || supplier,
+        categories: Array.isArray(card.categories) ? ['back', 'fit', 'well', 'mobilier', 'informatique', 'logiciel'].filter(key => card.categories.includes(key)) :
+          ({ 'Prime Back': ['back'], 'Prime Fit': ['fit'], 'Prime Well': ['well'], Mobilier: ['mobilier'],
+            'Matériel Info & AV': ['informatique'] }[target.sheet] || []),
         target, label: card.reference || label });
     }
 
