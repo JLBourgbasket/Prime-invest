@@ -63,7 +63,48 @@ exports.handler = async (event) => {
     const auth = getAuth();
     const sheets = google.sheets({ version: "v4", auth });
 
-    await sheets.spreadsheets.values.update({
+    if (field === "designation") {
+      const name = typeof value === "string" ? value.trim() : "";
+      const allowed = ["Prime Back", "Prime Fit", "Prime Well", "Mobilier", "Matériel Info & AV", "Extras AGM Constructions"];
+      if (!allowed.includes(sheet_name) || !Number.isInteger(row_index) || row_index < 3 || row_index >= 200 ||
+          !name || /^(▸|⚠|ℹ|🔗|statuts|total)/i.test(name) || /sous-total/i.test(name)) {
+        return { statusCode: 400, headers, body: JSON.stringify({ error: "Désignation ou ligne invalide." }) };
+      }
+      const sheet = `'${sheet_name}'`;
+      const row = row_index + 1;
+      const values = sheets.spreadsheets.values;
+      const { data } = await values.batchGet({
+        spreadsheetId: SPREADSHEET_ID,
+        ranges: [`${sheet}!A${row}:N${row}`, `${sheet}!O:O`],
+      });
+      const cells = data.valueRanges?.[0]?.values?.[0] || [];
+      const oldName = String(cells[0] || "").trim();
+      if (!oldName) return { statusCode: 409, headers, body: JSON.stringify({ error: "Ligne introuvable." }) };
+      const changes = [{ range, values: [[name]] }];
+      const updateRecord = (raw, target, rename) => {
+        if (!raw) return;
+        let record;
+        try { record = JSON.parse(raw); } catch { return; }
+        if (record && rename(record)) changes.push({ range: target, values: [[JSON.stringify(record)]] });
+      };
+      updateRecord(cells[13], `${sheet}!N${row}`, record => {
+        if (record.kind !== "prime-order-card") return false;
+        record.designation = name;
+        return true;
+      });
+      (data.valueRanges?.[1]?.values || []).forEach(([raw], index) => {
+        updateRecord(raw, `${sheet}!O${index + 1}`, record => {
+          if (record.kind !== "prime-order-group" || !Array.isArray(record.members)) return false;
+          const members = record.members.filter(member => member.row === row && member.designation === oldName);
+          members.forEach(member => { member.designation = name; });
+          return members.length > 0;
+        });
+      });
+      await values.batchUpdate({
+        spreadsheetId: SPREADSHEET_ID,
+        requestBody: { valueInputOption: "RAW", data: changes },
+      });
+    } else await sheets.spreadsheets.values.update({
       spreadsheetId: SPREADSHEET_ID,
       range,
       valueInputOption: "USER_ENTERED",
