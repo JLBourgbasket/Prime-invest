@@ -195,7 +195,7 @@
     <div class="order-actions">
       <a id="orderDocument" target="_blank" rel="noopener noreferrer" hidden>Ouvrir le bon de commande</a>
       <button type="submit" id="saveOrder">Enregistrer</button>
-      <button type="button" onclick="document.getElementById('orderCard').close()">Fermer</button>
+      <button type="button" id="closeOrder">Fermer</button>
     </div>
   </form>
 </dialog>
@@ -360,6 +360,11 @@ const saveOrder = document.getElementById('saveOrder');
 const orderDocument = document.getElementById('orderDocument');
 let accessCode = '';
 let activeOrder;
+document.getElementById('closeOrder').addEventListener('click', () => orderDialog.close());
+orderDialog.addEventListener('close', () => {
+  activeOrder = undefined;
+  showOrderPdf({});
+});
 const selectedRows = new Map();
 const pdfInput = document.getElementById('orderPdf');
 const pdfViewer = document.getElementById('orderPdfViewer');
@@ -398,9 +403,8 @@ function getAccessCode() {
   return Boolean(accessCode);
 }
 
-async function listOrderGroups() {
+async function listOrderGroups(sheet = appData.tabs[activeTab].sheet_name) {
   if (!getAccessCode()) return;
-  const sheet = appData.tabs[activeTab].sheet_name;
   groupList.textContent = 'Chargement…';
   groupDialog.showModal();
   try {
@@ -525,7 +529,7 @@ orderForm.addEventListener('submit', async event => {
   try {
     const pdf = await readOrderPdf();
     const result = await orderRequest(order.target, { card, previous: order.version, pdf });
-    if (activeOrder !== order) return;
+    if (activeOrder !== order || !orderDialog.open) return;
     order.version = result.version;
     if (result.groupId) order.target = { sheet: order.target.sheet, groupId: result.groupId };
     if (order.selectionTab) {
@@ -536,7 +540,13 @@ orderForm.addEventListener('submit', async event => {
     pdfInput.value = '';
     showOrderPdf(result.card);
     showOrderDocument(result.card.document);
-    orderMessage.textContent = 'Fiche enregistrée.';
+    if (result.groupId) {
+      orderDialog.close();
+      toast('Commande groupée enregistrée.');
+      await listOrderGroups(order.target.sheet);
+    } else {
+      orderMessage.textContent = 'Fiche enregistrée.';
+    }
   } catch (error) {
     if (activeOrder === order) orderMessage.textContent = error.message;
   } finally {
