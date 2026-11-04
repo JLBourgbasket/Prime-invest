@@ -163,3 +163,40 @@ Dans Netlify → Deploys → "Trigger deploy" → Deploy site
 ## Support
 
 En cas de problème, vérifier dans Netlify → Functions → Logs les erreurs des fonctions serverless.
+
+## Fiches commande
+
+La fiche est disponible sur chaque ligne dont le total HT est strictement
+supérieur à 200 €. Le seuil s’applique à la ligne, quantité comprise.
+
+1. Confirmer que `GOOGLE_SPREADSHEET_ID` pointe vers le classeur de production.
+2. Dans Netlify, créer `PRIME_ORDER_ACCESS_CODE` avec un secret long et
+   aléatoire. Le conserver côté fonctions et le transmettre aux personnes
+   autorisées via un canal privé.
+3. Vérifier que la colonne N est réservée aux fiches sur les six onglets.
+   Le compte de service doit pouvoir écrire dans cette colonne.
+4. Déployer la version et ouvrir une fiche Prime Fit. Tester un
+   enregistrement et rouvrir la fiche pour vérifier sa persistance.
+
+Les fiches sont enregistrées en colonne N sur la ligne de l’article. Inclure
+cette colonne dans tout tri, et vérifier les fiches avant de renommer les
+articles existants. Le code d’accès protège la nouvelle fonction uniquement.
+Les fonctions historiques doivent être protégées séparément avant une
+diffusion de l’application à l’équipe.
+
+### PDF et commandes groupées
+
+Activez l’API Google Drive dans le projet Google Cloud du compte de service.
+Créez le dossier « Bons de commande » dans le Drive partagé Prime Sport Santé.
+Donnez au compte de service le droit d’y ajouter des fichiers et configurez
+`PRIME_ORDER_PDF_FOLDER_ID` sur Netlify avec l’identifiant du dossier.
+Les utilisateurs doivent disposer de leurs propres droits Drive pour lire
+et télécharger les PDF. Le fichier est importé au moment d’enregistrer la
+fiche. Taille maximale : 3 Mio. En cas de remplacement, le PDF précédent
+reste dans Drive.
+
+Réservez la colonne O des six onglets aux commandes groupées. Cochez au
+moins deux lignes d’un même onglet, puis cliquez sur « Grouper la sélection ».
+Les fiches enregistrées se retrouvent dans « Commandes groupées ».
+« Fiche globale AGM » couvre l’onglet entier. Les fiches individuelles
+restent en colonne N et conservent leurs données et liens existants.
