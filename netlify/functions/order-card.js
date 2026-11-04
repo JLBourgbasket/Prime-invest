@@ -85,6 +85,11 @@ exports.handler = async (event) => {
                 !member.designation || /^(▸|⚠|ℹ|🔗|statuts|sous-total|total)/i.test(member.designation)) {
               return reply(409, { error: 'La sélection a changé. Actualisez le tableau.' });
             }
+            if (records.some(({ entry }) => entry.allAgm || entry.members?.some(existingMember =>
+              existingMember.row === member.row && existingMember.designation === member.designation
+            ))) {
+              return reply(409, { error: 'Une ligne appartient déjà à une commande groupée. Actualisez le tableau.' });
+            }
             seen.add(member.row);
           }
         }
